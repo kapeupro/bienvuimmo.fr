@@ -4,18 +4,25 @@
 PassengerEnabled on
 PassengerAppRoot /home/VOTRE_USER/public_html
 PassengerAppType node
-PassengerStartupFile server.js
+PassengerStartupFile server-static.js
 PassengerNodejs /usr/bin/node
 
-# Réécriture d'URL
+# ===== IMPORTANT: Réécriture d'URL =====
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ / [L,QSA]
 
-# Force HTTPS
+# Force HTTPS en premier
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# NE PAS réécrire les requêtes API - les laisser passer à Node.js
+RewriteCond %{REQUEST_URI} !^/api/
+# NE PAS réécrire les fichiers statiques Next.js
+RewriteCond %{REQUEST_URI} !^/_next/
+# NE PAS réécrire si le fichier existe
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# Laisser Passenger gérer le routing
+RewriteRule ^(.*)$ - [L]
 
 # Compression Gzip
 <IfModule mod_deflate.c>

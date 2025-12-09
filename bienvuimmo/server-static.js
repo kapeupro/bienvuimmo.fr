@@ -205,21 +205,27 @@ async function handleLogin(req, res) {
 }
 
 async function handleRegister(req, res) {
+  console.log('📝 Register request received');
   try {
     const body = await parseBody(req);
+    console.log('📝 Register body parsed:', { email: body.email, agencyName: body.agencyName });
+    
     const { firstName, lastName, email, phone, password, agencyName, agencyAddress, agencyCity, agencyPostalCode, siret, plan } = body;
 
     if (!firstName || !lastName || !email || !password || !agencyName) {
+      console.log('❌ Register: champs manquants');
       return sendJSON(res, 400, { error: 'Champs obligatoires manquants' });
     }
 
     if (!pool) {
+      console.log('❌ Register: base de données non disponible');
       return sendJSON(res, 503, { error: 'Base de données non disponible' });
     }
 
     // Vérifier email existant
     const [existing] = await pool.execute('SELECT id FROM User WHERE LOWER(email) = LOWER(?)', [email]);
     if (existing.length > 0) {
+      console.log('❌ Register: email déjà utilisé');
       return sendJSON(res, 409, { error: 'Cet email est déjà utilisé' });
     }
 
@@ -249,6 +255,7 @@ async function handleRegister(req, res) {
       );
 
       await connection.commit();
+      console.log('✅ Register: compte créé avec succès');
 
       const token = jwt.sign(
         { userId, email: email.toLowerCase(), role: 'ADMIN', agencyId },
@@ -261,7 +268,14 @@ async function handleRegister(req, res) {
       sendJSON(res, 201, {
         success: true,
         token,
-        user: { id: userId, email: email.toLowerCase(), firstName, lastName, role: 'ADMIN' }
+        user: { 
+          id: userId, 
+          email: email.toLowerCase(), 
+          firstName, 
+          lastName, 
+          role: 'ADMIN',
+          agency: { id: agencyId, name: agencyName, plan: dbPlan }
+        }
       });
 
     } catch (error) {
@@ -272,7 +286,7 @@ async function handleRegister(req, res) {
     }
 
   } catch (error) {
-    console.error('Register error:', error);
+    console.error('❌ Register error:', error);
     sendJSON(res, 500, { error: 'Erreur serveur: ' + error.message });
   }
 }
@@ -345,24 +359,46 @@ const server = http.createServer(async (req, res) => {
   if (method === 'OPTIONS') {
     res.writeHead(200, {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Credentials': 'true'
     });
     return res.end();
   }
 
   // ===== API ROUTES =====
-  if (url === '/api/auth/login' && method === 'POST') return handleLogin(req, res);
-  if (url === '/api/auth/register' && method === 'POST') return handleRegister(req, res);
-  if (url === '/api/auth/me' && method === 'GET') return handleMe(req, res);
-  if (url === '/api/auth/logout' && method === 'POST') return handleLogout(req, res);
+  // Login
+  if (url === '/api/auth/login' && method === 'POST') {
+    return handleLogin(req, res);
+  }
   
+  // Register
+  if (url === '/api/auth/register' && method === 'POST') {
+    return handleRegister(req, res);
+  }
+  
+  // Me - GET user info
+  if (url === '/api/auth/me' && method === 'GET') {
+    return handleMe(req, res);
+  }
+  
+  // Logout
+  if (url === '/api/auth/logout' && method === 'POST') {
+    return handleLogout(req, res);
+  }
+  
+  // Health check
   if (url === '/api/health') {
     return sendJSON(res, 200, { 
       status: 'ok', 
       database: pool ? 'connected' : 'disconnected',
       timestamp: new Date().toISOString()
     });
+  }
+
+  // API 404 - Retourner JSON pour les routes /api/*
+  if (url.startsWith('/api/')) {
+    return sendJSON(res, 404, { error: 'Route API non trouvée', path: url, method });
   }
 
   // ===== STATIC FILES =====

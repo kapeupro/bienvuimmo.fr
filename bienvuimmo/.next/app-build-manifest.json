@@ -71,6 +71,14 @@
       "static/chunks/451-d25d6708b9eed4b6.js",
       "static/chunks/app/inscription/page-c1dc45bc88825627.js"
     ],
+    "/page": [
+      "static/chunks/webpack-56d088442ba9ae75.js",
+      "static/chunks/fd9d1056-1eecee4be4cc9813.js",
+      "static/chunks/117-4b8a7eb3773f0aee.js",
+      "static/chunks/main-app-5ce72ada3a0ed3d8.js",
+      "static/chunks/870-8db677a778208e00.js",
+      "static/chunks/app/page-b36765ebfe03b093.js"
+    ],
     "/tarifs/page": [
       "static/chunks/webpack-56d088442ba9ae75.js",
       "static/chunks/fd9d1056-1eecee4be4cc9813.js",
@@ -82,20 +90,12 @@
       "static/chunks/763-1d582e7c467c2d2f.js",
       "static/chunks/app/tarifs/page-d9e9704ef7e8c8ed.js"
     ],
-    "/page": [
+    "/dashboard/page": [
       "static/chunks/webpack-56d088442ba9ae75.js",
       "static/chunks/fd9d1056-1eecee4be4cc9813.js",
       "static/chunks/117-4b8a7eb3773f0aee.js",
       "static/chunks/main-app-5ce72ada3a0ed3d8.js",
-      "static/chunks/870-8db677a778208e00.js",
-      "static/chunks/app/page-b36765ebfe03b093.js"
-    ],
-    "/dashboard/contacts/page": [
-      "static/chunks/webpack-56d088442ba9ae75.js",
-      "static/chunks/fd9d1056-1eecee4be4cc9813.js",
-      "static/chunks/117-4b8a7eb3773f0aee.js",
-      "static/chunks/main-app-5ce72ada3a0ed3d8.js",
-      "static/chunks/app/dashboard/contacts/page-9689b24388107a64.js"
+      "static/chunks/app/dashboard/page-ea7428ad3d26bb16.js"
     ],
     "/dashboard/layout": [
       "static/chunks/webpack-56d088442ba9ae75.js",
@@ -119,12 +119,12 @@
       "static/chunks/main-app-5ce72ada3a0ed3d8.js",
       "static/chunks/app/dashboard/properties/page-22c686da7e7be300.js"
     ],
-    "/dashboard/page": [
+    "/dashboard/contacts/page": [
       "static/chunks/webpack-56d088442ba9ae75.js",
       "static/chunks/fd9d1056-1eecee4be4cc9813.js",
       "static/chunks/117-4b8a7eb3773f0aee.js",
       "static/chunks/main-app-5ce72ada3a0ed3d8.js",
-      "static/chunks/app/dashboard/page-ea7428ad3d26bb16.js"
+      "static/chunks/app/dashboard/contacts/page-9689b24388107a64.js"
     ],
     "/dashboard/settings/page": [
       "static/chunks/webpack-56d088442ba9ae75.js",
