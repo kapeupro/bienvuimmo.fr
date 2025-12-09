@@ -216,29 +216,24 @@ export default function HomePage() {
 
             {/* Desktop Menu */}
             <div className="hidden lg:flex items-center gap-1">
-              {['Fonctionnalités', 'Tarifs', 'Témoignages', 'Contact'].map((item) => (
-                <a 
-                  key={item}
-                  href={`#${item.toLowerCase()}`} 
-                  className="px-4 py-2 text-stone-600 hover:text-stone-900 transition-colors text-sm font-medium rounded-full hover:bg-stone-100"
-                >
-                  {item}
-                </a>
-              ))}
+              <a href="/fonctionnalites" className="px-4 py-2 text-stone-600 hover:text-stone-900 transition-colors text-sm font-medium rounded-full hover:bg-stone-100">Fonctionnalités</a>
+              <a href="/tarifs" className="px-4 py-2 text-stone-600 hover:text-stone-900 transition-colors text-sm font-medium rounded-full hover:bg-stone-100">Tarifs</a>
+              <a href="/annonces" className="px-4 py-2 text-stone-600 hover:text-stone-900 transition-colors text-sm font-medium rounded-full hover:bg-stone-100">Annonces</a>
+              <a href="/contact" className="px-4 py-2 text-stone-600 hover:text-stone-900 transition-colors text-sm font-medium rounded-full hover:bg-stone-100">Contact</a>
             </div>
 
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center gap-3">
-              <button className="px-5 py-2.5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors rounded-full hover:bg-stone-100">
+              <a href="/connexion" className="px-5 py-2.5 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors rounded-full hover:bg-stone-100">
                 Connexion
-              </button>
-              <button className="group relative bg-stone-900 text-white px-6 py-2.5 rounded-full text-sm font-semibold overflow-hidden transition-all hover:shadow-xl hover:shadow-stone-900/20">
+              </a>
+              <a href="/inscription" className="group relative bg-stone-900 text-white px-6 py-2.5 rounded-full text-sm font-semibold overflow-hidden transition-all hover:shadow-xl hover:shadow-stone-900/20">
                 <span className="relative z-10 flex items-center gap-2">
                   Essai gratuit
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
+              </a>
             </div>
 
             {/* Mobile menu button */}
@@ -255,23 +250,13 @@ export default function HomePage() {
         {isMenuOpen && (
           <div className="lg:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-stone-100 shadow-xl">
             <div className="px-6 py-6 space-y-2">
-              {['Fonctionnalités', 'Tarifs', 'Témoignages', 'Contact'].map((item) => (
-                <a 
-                  key={item}
-                  href={`#${item.toLowerCase()}`} 
-                  className="block px-4 py-3 text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-xl transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item}
-                </a>
-              ))}
+              <a href="/fonctionnalites" className="block px-4 py-3 text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-xl transition-colors font-medium" onClick={() => setIsMenuOpen(false)}>Fonctionnalités</a>
+              <a href="/tarifs" className="block px-4 py-3 text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-xl transition-colors font-medium" onClick={() => setIsMenuOpen(false)}>Tarifs</a>
+              <a href="/annonces" className="block px-4 py-3 text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-xl transition-colors font-medium" onClick={() => setIsMenuOpen(false)}>Annonces</a>
+              <a href="/contact" className="block px-4 py-3 text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-xl transition-colors font-medium" onClick={() => setIsMenuOpen(false)}>Contact</a>
               <div className="pt-4 mt-4 border-t border-stone-100 space-y-3">
-                <button className="w-full px-4 py-3 text-left text-stone-600 hover:bg-stone-50 rounded-xl transition-colors font-medium">
-                  Connexion
-                </button>
-                <button className="w-full bg-stone-900 text-white px-6 py-3.5 rounded-xl text-sm font-semibold">
-                  Essai gratuit — 14 jours
-                </button>
+                <a href="/connexion" className="block w-full px-4 py-3 text-left text-stone-600 hover:bg-stone-50 rounded-xl transition-colors font-medium">Connexion</a>
+                <a href="/inscription" className="block w-full bg-stone-900 text-white px-6 py-3.5 rounded-xl text-sm font-semibold text-center">Essai gratuit — 14 jours</a>
               </div>
             </div>
           </div>
@@ -784,22 +769,19 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold mb-6">Produit</h4>
               <ul className="space-y-4 text-stone-400">
-                {['Fonctionnalités', 'Tarifs', 'Intégrations', 'Changelog', 'Roadmap'].map((item) => (
-                  <li key={item}>
-                    <a href="#" className="hover:text-white transition-colors">{item}</a>
-                  </li>
-                ))}
+                <li><a href="/fonctionnalites" className="hover:text-white transition-colors">Fonctionnalités</a></li>
+                <li><a href="/tarifs" className="hover:text-white transition-colors">Tarifs</a></li>
+                <li><a href="/annonces" className="hover:text-white transition-colors">Annonces</a></li>
+                <li><a href="/inscription" className="hover:text-white transition-colors">Essai gratuit</a></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-6">Ressources</h4>
+              <h4 className="font-semibold mb-6">Compte</h4>
               <ul className="space-y-4 text-stone-400">
-                {['Centre d\'aide', 'Blog', 'Guides', 'Webinaires', 'API Docs'].map((item) => (
-                  <li key={item}>
-                    <a href="#" className="hover:text-white transition-colors">{item}</a>
-                  </li>
-                ))}
+                <li><a href="/connexion" className="hover:text-white transition-colors">Connexion</a></li>
+                <li><a href="/inscription" className="hover:text-white transition-colors">Inscription</a></li>
+                <li><a href="/dashboard" className="hover:text-white transition-colors">Tableau de bord</a></li>
               </ul>
             </div>
             
@@ -828,9 +810,14 @@ export default function HomePage() {
           
           {/* Bottom */}
           <div className="border-t border-stone-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-stone-500 text-sm">
-              © 2025 BienVuImmo. Tous droits réservés.
-            </p>
+            <div className="text-center md:text-left">
+              <p className="text-stone-500 text-sm">
+                © 2025 BienVuImmo. Tous droits réservés.
+              </p>
+              <p className="text-stone-600 text-xs mt-1">
+                Créé avec <span className="text-red-500">❤</span> par <span className="text-amber-400 font-medium">Dimitri Sarrazin</span>
+              </p>
+            </div>
             <div className="flex flex-wrap justify-center gap-6 text-stone-500 text-sm">
               <a href="#" className="hover:text-white transition-colors">Mentions légales</a>
               <a href="#" className="hover:text-white transition-colors">Confidentialité</a>
