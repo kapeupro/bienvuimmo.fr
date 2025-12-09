@@ -158,28 +158,28 @@ export default function FonctionnalitesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-blue-600" />
+            <Building2 className="h-8 w-8 text-amber-600" />
             <span className="text-2xl font-bold text-gray-900">bienvuimmo</span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/fonctionnalites" className="text-blue-600 font-medium">
+            <Link href="/fonctionnalites" className="text-amber-600 font-medium">
               Fonctionnalités
             </Link>
-            <Link href="/tarifs" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/tarifs" className="text-gray-600 hover:text-amber-600 transition">
               Tarifs
             </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/contact" className="text-gray-600 hover:text-amber-600 transition">
               Contact
             </Link>
-            <button className="px-4 py-2 text-blue-600 hover:text-blue-700 transition">
+            <button className="px-4 py-2 text-amber-600 hover:text-amber-700 transition">
               Connexion
             </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">
+            <button className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-md">
               Essai gratuit
             </button>
           </div>
@@ -189,20 +189,20 @@ export default function FonctionnalitesPage() {
       {/* Hero */}
       <section className="container mx-auto px-4 py-20 text-center">
         <div className="features-hero max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-full text-sm font-medium mb-8">
             <Zap className="h-4 w-4" />
             Plus de 50 fonctionnalités intégrées
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             Tout ce dont votre agence a besoin,{' '}
-            <span className="text-blue-600">en une seule plateforme</span>
+            <span className="text-amber-600">en une seule plateforme</span>
           </h1>
           <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
             De la gestion de biens à la signature électronique, découvrez les outils qui vont 
             révolutionner votre façon de travailler.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="group px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg text-lg font-medium flex items-center justify-center gap-2">
+            <button className="group px-8 py-4 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-lg text-lg font-medium flex items-center justify-center gap-2">
               Démarrer l'essai gratuit
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -267,8 +267,8 @@ export default function FonctionnalitesPage() {
                 key={feature.title}
                 className="feature-grid-item bg-white rounded-xl p-6 shadow-sm border hover:shadow-lg transition text-center"
               >
-                <div className="inline-flex p-3 rounded-lg bg-blue-50 mb-4">
-                  <feature.icon className="h-6 w-6 text-blue-600" />
+                <div className="inline-flex p-3 rounded-lg bg-amber-50 mb-4">
+                  <feature.icon className="h-6 w-6 text-amber-600" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
                 <p className="text-sm text-gray-600">{feature.description}</p>
@@ -280,15 +280,15 @@ export default function FonctionnalitesPage() {
 
       {/* CTA */}
       <section className="container mx-auto px-4 py-20">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
+        <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
           <h2 className="text-4xl font-bold mb-4">
             Prêt à découvrir toutes nos fonctionnalités ?
           </h2>
-          <p className="text-xl mb-8 text-blue-100">
+          <p className="text-xl mb-8 text-amber-100">
             Testez bienvuimmo gratuitement pendant 14 jours, sans engagement.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="group px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition shadow-lg text-lg font-medium inline-flex items-center justify-center gap-2">
+            <button className="group px-8 py-4 bg-white text-amber-600 rounded-lg hover:bg-gray-100 transition shadow-lg text-lg font-medium inline-flex items-center justify-center gap-2">
               Essai gratuit
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -305,7 +305,7 @@ export default function FonctionnalitesPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="h-6 w-6 text-blue-400" />
+                <Building2 className="h-6 w-6 text-amber-400" />
                 <span className="text-xl font-bold text-white">bienvuimmo</span>
               </div>
               <p className="text-sm">

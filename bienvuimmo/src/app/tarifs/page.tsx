@@ -133,28 +133,28 @@ export default function TarifsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-blue-600" />
+            <Building2 className="h-8 w-8 text-amber-600" />
             <span className="text-2xl font-bold text-gray-900">bienvuimmo</span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/fonctionnalites" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/fonctionnalites" className="text-gray-600 hover:text-amber-600 transition">
               Fonctionnalités
             </Link>
-            <Link href="/tarifs" className="text-blue-600 font-medium">
+            <Link href="/tarifs" className="text-amber-600 font-medium">
               Tarifs
             </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/contact" className="text-gray-600 hover:text-amber-600 transition">
               Contact
             </Link>
-            <button className="px-4 py-2 text-blue-600 hover:text-blue-700 transition">
+            <button className="px-4 py-2 text-amber-600 hover:text-amber-700 transition">
               Connexion
             </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">
+            <button className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-md">
               Essai gratuit
             </button>
           </div>
@@ -185,7 +185,7 @@ export default function TarifsPage() {
               key={plan.name}
               className={`pricing-card relative rounded-2xl p-8 ${
                 plan.highlight
-                  ? 'bg-blue-600 text-white shadow-2xl scale-105 z-10'
+                  ? 'bg-amber-600 text-white shadow-2xl scale-105 z-10'
                   : 'bg-white text-gray-900 shadow-lg border'
               }`}
             >
@@ -196,19 +196,19 @@ export default function TarifsPage() {
               )}
               
               <div className="flex items-center gap-3 mb-4">
-                <div className={`p-2 rounded-lg ${plan.highlight ? 'bg-blue-500' : 'bg-blue-100'}`}>
-                  <plan.icon className={`h-6 w-6 ${plan.highlight ? 'text-white' : 'text-blue-600'}`} />
+                <div className={`p-2 rounded-lg ${plan.highlight ? 'bg-amber-500' : 'bg-amber-100'}`}>
+                  <plan.icon className={`h-6 w-6 ${plan.highlight ? 'text-white' : 'text-amber-600'}`} />
                 </div>
                 <h3 className="text-2xl font-bold">{plan.name}</h3>
               </div>
               
-              <p className={plan.highlight ? 'text-blue-100' : 'text-gray-600'}>
+              <p className={plan.highlight ? 'text-amber-100' : 'text-gray-600'}>
                 {plan.description}
               </p>
               
               <div className="my-6">
                 <span className="text-5xl font-bold">{plan.price}</span>
-                <span className={plan.highlight ? 'text-blue-100' : 'text-gray-600'}>
+                <span className={plan.highlight ? 'text-amber-100' : 'text-gray-600'}>
                   {plan.period}
                 </span>
               </div>
@@ -216,12 +216,12 @@ export default function TarifsPage() {
               <ul className="space-y-3 mb-8">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
-                    <CheckCircle2 className={`h-5 w-5 flex-shrink-0 ${plan.highlight ? 'text-blue-200' : 'text-green-500'}`} />
+                    <CheckCircle2 className={`h-5 w-5 flex-shrink-0 ${plan.highlight ? 'text-amber-200' : 'text-green-500'}`} />
                     <span className="text-sm">{feature}</span>
                   </li>
                 ))}
                 {plan.notIncluded.map((feature) => (
-                  <li key={feature} className={`flex items-center gap-2 ${plan.highlight ? 'text-blue-300' : 'text-gray-400'}`}>
+                  <li key={feature} className={`flex items-center gap-2 ${plan.highlight ? 'text-amber-300' : 'text-gray-400'}`}>
                     <span className="h-5 w-5 flex items-center justify-center flex-shrink-0">✕</span>
                     <span className="text-sm line-through">{feature}</span>
                   </li>
@@ -231,8 +231,8 @@ export default function TarifsPage() {
               <button
                 className={`w-full py-4 rounded-xl font-medium transition flex items-center justify-center gap-2 hover:scale-[1.02] ${
                   plan.highlight
-                    ? 'bg-white text-blue-600 hover:bg-gray-100 shadow-lg'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-white text-amber-600 hover:bg-gray-100 shadow-lg'
+                    : 'bg-amber-600 text-white hover:bg-amber-700'
                 }`}
               >
                 {plan.cta}
@@ -273,7 +273,7 @@ export default function TarifsPage() {
       <section ref={faqRef} className="container mx-auto px-4 py-16 bg-gray-50">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
-            <HelpCircle className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+            <HelpCircle className="h-12 w-12 text-amber-600 mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Questions fréquentes
             </h2>
@@ -291,15 +291,15 @@ export default function TarifsPage() {
 
       {/* CTA */}
       <section className="container mx-auto px-4 py-20">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
+        <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">
             Prêt à transformer votre agence ?
           </h2>
-          <p className="text-xl mb-8 text-blue-100">
+          <p className="text-xl mb-8 text-amber-100">
             Démarrez votre essai gratuit de 14 jours, sans carte bancaire requise.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition shadow-lg text-lg font-medium inline-flex items-center justify-center gap-2">
+            <button className="px-8 py-4 bg-white text-amber-600 rounded-lg hover:bg-gray-100 transition shadow-lg text-lg font-medium inline-flex items-center justify-center gap-2">
               Démarrer l'essai gratuit
               <ArrowRight className="h-5 w-5" />
             </button>
@@ -316,7 +316,7 @@ export default function TarifsPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="h-6 w-6 text-blue-400" />
+                <Building2 className="h-6 w-6 text-amber-400" />
                 <span className="text-xl font-bold text-white">bienvuimmo</span>
               </div>
               <p className="text-sm">

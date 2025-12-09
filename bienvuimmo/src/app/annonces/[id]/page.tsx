@@ -451,7 +451,7 @@ export default function PropertyDetailPage() {
           <p className="text-gray-600 mb-6">Cette annonce n'existe pas ou a été supprimée.</p>
           <Link
             href="/annonces"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
           >
             <ArrowLeft className="h-5 w-5" />
             Retour aux annonces
@@ -480,20 +480,20 @@ export default function PropertyDetailPage() {
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-blue-600" />
+            <Building2 className="h-8 w-8 text-amber-600" />
             <span className="text-2xl font-bold text-gray-900">bienvuimmo</span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/annonces" className="text-blue-600 font-medium">
+            <Link href="/annonces" className="text-amber-600 font-medium">
               Annonces
             </Link>
-            <Link href="/fonctionnalites" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/fonctionnalites" className="text-gray-600 hover:text-amber-600 transition">
               Fonctionnalités
             </Link>
-            <Link href="/tarifs" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/tarifs" className="text-gray-600 hover:text-amber-600 transition">
               Tarifs
             </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/contact" className="text-gray-600 hover:text-amber-600 transition">
               Contact
             </Link>
           </div>
@@ -503,9 +503,9 @@ export default function PropertyDetailPage() {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Link href="/" className="hover:text-blue-600">Accueil</Link>
+          <Link href="/" className="hover:text-amber-600">Accueil</Link>
           <span>/</span>
-          <Link href="/annonces" className="hover:text-blue-600">Annonces</Link>
+          <Link href="/annonces" className="hover:text-amber-600">Annonces</Link>
           <span>/</span>
           <span className="text-gray-900">{property.reference}</span>
         </div>
@@ -563,7 +563,7 @@ export default function PropertyDetailPage() {
                 <div className="absolute top-4 left-4">
                   <span className={`px-4 py-2 rounded-full text-sm font-medium ${
                     property.transactionType === 'Vente' 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'bg-amber-600 text-white' 
                       : 'bg-purple-600 text-white'
                   }`}>
                     {property.transactionType}
@@ -579,7 +579,7 @@ export default function PropertyDetailPage() {
                       key={idx}
                       onClick={() => setCurrentPhotoIndex(idx)}
                       className={`flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition ${
-                        idx === currentPhotoIndex ? 'border-blue-600' : 'border-transparent'
+                        idx === currentPhotoIndex ? 'border-amber-600' : 'border-transparent'
                       }`}
                     >
                       <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
@@ -598,7 +598,7 @@ export default function PropertyDetailPage() {
                   <p className="text-sm text-gray-500 mb-1">Réf. {property.reference}</p>
                   <h1 className="text-2xl font-bold text-gray-900">{property.title}</h1>
                 </div>
-                <p className="text-3xl font-bold text-blue-600">
+                <p className="text-3xl font-bold text-amber-600">
                   {new Intl.NumberFormat('fr-FR', { 
                     style: 'currency', 
                     currency: 'EUR',
@@ -654,7 +654,7 @@ export default function PropertyDetailPage() {
                   {property.features.map((feature, idx) => (
                     <span 
                       key={idx}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm"
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-sm"
                     >
                       <Check className="h-4 w-4" />
                       {feature}
@@ -718,7 +718,7 @@ export default function PropertyDetailPage() {
                 {/* GES */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Thermometer className="h-5 w-5 text-blue-500" />
+                    <Thermometer className="h-5 w-5 text-amber-500" />
                     <span className="font-medium text-gray-900">Émissions de GES</span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -741,7 +741,7 @@ export default function PropertyDetailPage() {
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Contacter l'agent</h2>
               
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
                   {property.agent.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
@@ -753,7 +753,7 @@ export default function PropertyDetailPage() {
               <div className="space-y-3 mb-6">
                 <a
                   href={`tel:${property.agent.phone}`}
-                  className="flex items-center gap-3 w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                  className="flex items-center gap-3 w-full px-4 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition font-medium"
                 >
                   <Phone className="h-5 w-5" />
                   {property.agent.phone}
@@ -781,7 +781,7 @@ export default function PropertyDetailPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
                     <input
                       type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
                       placeholder="Votre nom"
                     />
                   </div>
@@ -789,7 +789,7 @@ export default function PropertyDetailPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input
                       type="email"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
                       placeholder="votre@email.com"
                     />
                   </div>
@@ -797,7 +797,7 @@ export default function PropertyDetailPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
                     <input
                       type="tel"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
                       placeholder="06 12 34 56 78"
                     />
                   </div>
@@ -805,14 +805,14 @@ export default function PropertyDetailPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
                     <textarea
                       rows={4}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none resize-none"
                       placeholder="Je souhaite visiter ce bien..."
                       defaultValue={`Bonjour,\n\nJe suis intéressé(e) par le bien ${property.reference} "${property.title}".\n\nJe souhaiterais organiser une visite.\n\nCordialement`}
                     />
                   </div>
                   <button
                     type="submit"
-                    className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                    className="w-full px-4 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition font-medium"
                   >
                     Envoyer ma demande
                   </button>
@@ -838,7 +838,7 @@ export default function PropertyDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="h-6 w-6 text-blue-400" />
+                <Building2 className="h-6 w-6 text-amber-400" />
                 <span className="text-xl font-bold text-white">bienvuimmo</span>
               </div>
               <p className="text-sm">

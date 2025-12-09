@@ -229,26 +229,26 @@ export default function AnnoncesPage() {
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-blue-600" />
+            <Building2 className="h-8 w-8 text-amber-600" />
             <span className="text-2xl font-bold text-gray-900">bienvuimmo</span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/annonces" className="text-blue-600 font-medium">
+            <Link href="/annonces" className="text-amber-600 font-medium">
               Annonces
             </Link>
-            <Link href="/fonctionnalites" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/fonctionnalites" className="text-gray-600 hover:text-amber-600 transition">
               Fonctionnalités
             </Link>
-            <Link href="/tarifs" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/tarifs" className="text-gray-600 hover:text-amber-600 transition">
               Tarifs
             </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/contact" className="text-gray-600 hover:text-amber-600 transition">
               Contact
             </Link>
-            <button className="px-4 py-2 text-blue-600 hover:text-blue-700 transition">
+            <button className="px-4 py-2 text-amber-600 hover:text-amber-700 transition">
               Connexion
             </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">
+            <button className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-md">
               Essai gratuit
             </button>
           </div>
@@ -256,13 +256,13 @@ export default function AnnoncesPage() {
       </header>
 
       {/* Hero section */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-16">
+      <section className="bg-gradient-to-r from-amber-500 to-orange-600 text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               Trouvez votre bien idéal
             </h1>
-            <p className="text-xl text-blue-100 mb-8">
+            <p className="text-xl text-amber-100 mb-8">
               {properties.length} biens disponibles à la vente et à la location
             </p>
             
@@ -276,13 +276,13 @@ export default function AnnoncesPage() {
                     placeholder="Ville, adresse, type de bien..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-gray-100 text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="w-full pl-12 pr-4 py-3 bg-gray-100 text-gray-900 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
                   />
                 </div>
                 <select
                   value={filterTransaction}
                   onChange={(e) => setFilterTransaction(e.target.value)}
-                  className="px-4 py-3 bg-gray-100 text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="px-4 py-3 bg-gray-100 text-gray-900 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 >
                   <option value="all">Acheter / Louer</option>
                   <option value="Vente">Acheter</option>
@@ -296,7 +296,7 @@ export default function AnnoncesPage() {
                   <span>Filtres</span>
                   <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
                 </button>
-                <button className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium">
+                <button className="px-8 py-3 bg-amber-600 text-white rounded-xl hover:bg-amber-700 transition font-medium">
                   Rechercher
                 </button>
               </div>
@@ -309,7 +309,7 @@ export default function AnnoncesPage() {
                     <select
                       value={filterType}
                       onChange={(e) => setFilterType(e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
                     >
                       <option value="all">Tous les types</option>
                       <option value="Appartement">Appartement</option>
@@ -323,7 +323,7 @@ export default function AnnoncesPage() {
                     <select
                       value={filterCity}
                       onChange={(e) => setFilterCity(e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
                     >
                       <option value="all">Toutes les villes</option>
                       {cities.map(city => (
@@ -338,7 +338,7 @@ export default function AnnoncesPage() {
                       placeholder="€ Min"
                       value={priceMin}
                       onChange={(e) => setPriceMin(e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -348,7 +348,7 @@ export default function AnnoncesPage() {
                       placeholder="€ Max"
                       value={priceMax}
                       onChange={(e) => setPriceMax(e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -369,25 +369,25 @@ export default function AnnoncesPage() {
             {(filterType !== 'all' || filterTransaction !== 'all' || filterCity !== 'all') && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {filterType !== 'all' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm">
                     {filterType}
-                    <button onClick={() => setFilterType('all')} className="hover:text-blue-900">
+                    <button onClick={() => setFilterType('all')} className="hover:text-amber-700">
                       <X className="h-4 w-4" />
                     </button>
                   </span>
                 )}
                 {filterTransaction !== 'all' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm">
                     {filterTransaction}
-                    <button onClick={() => setFilterTransaction('all')} className="hover:text-blue-900">
+                    <button onClick={() => setFilterTransaction('all')} className="hover:text-amber-700">
                       <X className="h-4 w-4" />
                     </button>
                   </span>
                 )}
                 {filterCity !== 'all' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm">
                     {filterCity}
-                    <button onClick={() => setFilterCity('all')} className="hover:text-blue-900">
+                    <button onClick={() => setFilterCity('all')} className="hover:text-amber-700">
                       <X className="h-4 w-4" />
                     </button>
                   </span>
@@ -397,7 +397,7 @@ export default function AnnoncesPage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Trier par :</span>
-            <select className="px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+            <select className="px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm">
               <option>Plus récent</option>
               <option>Prix croissant</option>
               <option>Prix décroissant</option>
@@ -423,7 +423,7 @@ export default function AnnoncesPage() {
                 <div className="absolute top-3 left-3">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     property.transactionType === 'Vente' 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'bg-amber-600 text-white' 
                       : 'bg-purple-600 text-white'
                   }`}>
                     {property.transactionType}
@@ -455,7 +455,7 @@ export default function AnnoncesPage() {
               {/* Content */}
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition line-clamp-2">
+                  <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 transition line-clamp-2">
                     {property.title}
                   </h3>
                 </div>
@@ -481,7 +481,7 @@ export default function AnnoncesPage() {
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <p className="text-xl font-bold text-blue-600">
+                  <p className="text-xl font-bold text-amber-600">
                     {new Intl.NumberFormat('fr-FR', { 
                       style: 'currency', 
                       currency: 'EUR',
@@ -493,7 +493,7 @@ export default function AnnoncesPage() {
                   </p>
                   <Link
                     href={`/annonces/${property.id}`}
-                    className="text-sm font-medium text-blue-600 hover:text-blue-700 transition"
+                    className="text-sm font-medium text-amber-600 hover:text-amber-700 transition"
                   >
                     Voir détails →
                   </Link>
@@ -521,7 +521,7 @@ export default function AnnoncesPage() {
                 setPriceMin('');
                 setPriceMax('');
               }}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
             >
               Réinitialiser les filtres
             </button>
@@ -541,7 +541,7 @@ export default function AnnoncesPage() {
             </p>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-lg"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition font-medium text-lg"
             >
               Découvrir notre solution
             </Link>
@@ -555,7 +555,7 @@ export default function AnnoncesPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="h-6 w-6 text-blue-400" />
+                <Building2 className="h-6 w-6 text-amber-400" />
                 <span className="text-xl font-bold text-white">bienvuimmo</span>
               </div>
               <p className="text-sm">

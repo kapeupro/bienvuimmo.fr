@@ -392,31 +392,31 @@ export default function HomeAnimations() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50 overflow-hidden">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-blue-600" />
+            <Building2 className="h-8 w-8 text-amber-600" />
             <span className="text-2xl font-bold text-gray-900">bienvuimmo</span>
           </div>
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/annonces" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/annonces" className="text-gray-600 hover:text-amber-600 transition">
               Annonces
             </Link>
-            <Link href="/fonctionnalites" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/fonctionnalites" className="text-gray-600 hover:text-amber-600 transition">
               Fonctionnalités
             </Link>
-            <Link href="/tarifs" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/tarifs" className="text-gray-600 hover:text-amber-600 transition">
               Tarifs
             </Link>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/contact" className="text-gray-600 hover:text-amber-600 transition">
               Contact
             </Link>
-            <button className="px-4 py-2 text-blue-600 hover:text-blue-700 transition">
+            <button className="px-4 py-2 text-amber-600 hover:text-amber-700 transition">
               Connexion
             </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">
+            <button className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-md">
               Essai gratuit
             </button>
           </div>
@@ -425,16 +425,16 @@ export default function HomeAnimations() {
 
       {/* Hero Section */}
       <section ref={heroRef} className="container mx-auto px-4 py-20 text-center relative">
-        <div className="hero-bg absolute inset-0 bg-gradient-to-br from-blue-100/50 to-indigo-100/50 -z-10 rounded-3xl" />
+        <div className="hero-bg absolute inset-0 bg-gradient-to-br from-amber-100/50 to-orange-100/50 -z-10 rounded-3xl" />
         <div className="max-w-4xl mx-auto">
-          <div className="hero-badge inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-8">
+          <div className="hero-badge inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-full text-sm font-medium mb-8">
             <Zap className="h-4 w-4" />
             Le SaaS immobilier nouvelle génération
           </div>
           
           <h1 className="hero-title text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             Gérez votre agence immobilière en{' '}
-            <span className="text-blue-600 relative">
+            <span className="text-amber-600 relative">
               toute simplicité
               <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none">
                 <path d="M2 10C50 4 100 2 150 2C200 2 250 4 298 10" stroke="#3B82F6" strokeWidth="3" strokeLinecap="round"/>
@@ -448,11 +448,11 @@ export default function HomeAnimations() {
           </p>
           
           <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="group px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-lg text-lg font-medium flex items-center justify-center gap-2 hover:scale-105 hover:shadow-xl">
+            <button className="group px-8 py-4 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all shadow-lg text-lg font-medium flex items-center justify-center gap-2 hover:scale-105 hover:shadow-xl">
               Démarrer gratuitement
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="px-8 py-4 bg-white text-gray-900 rounded-lg hover:bg-gray-50 transition border-2 border-gray-200 text-lg font-medium hover:border-blue-300">
+            <button className="px-8 py-4 bg-white text-gray-900 rounded-lg hover:bg-gray-50 transition border-2 border-gray-200 text-lg font-medium hover:border-amber-300">
               Voir la démo
             </button>
           </div>
@@ -479,7 +479,7 @@ export default function HomeAnimations() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
           {stats.map((stat) => (
             <div key={stat.label} className="stat-card bg-white rounded-xl p-6 shadow-sm border text-center hover:shadow-md transition-shadow">
-              <div className="stat-value text-3xl font-bold text-blue-600 mb-2">{stat.value}</div>
+              <div className="stat-value text-3xl font-bold text-amber-600 mb-2">{stat.value}</div>
               <div className="text-gray-600">{stat.label}</div>
             </div>
           ))}
@@ -520,7 +520,7 @@ export default function HomeAnimations() {
           </div>
           {/* PAP */}
           <div className="partner-logo flex flex-col items-center gap-3 p-6 rounded-xl hover:bg-gray-50 transition cursor-pointer group">
-            <div className="w-40 h-16 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-105 transition">
+            <div className="w-40 h-16 bg-gradient-to-r from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-105 transition">
               <span className="text-white font-bold text-xl">PAP</span>
             </div>
             <span className="text-sm text-gray-500">De particulier à particulier</span>
@@ -541,7 +541,7 @@ export default function HomeAnimations() {
           </div>
         </div>
         <p className="text-center text-gray-500 mt-10">
-          Et bien d'autres... <span className="font-semibold text-blue-600">+20 portails partenaires</span>
+          Et bien d'autres... <span className="font-semibold text-amber-600">+20 portails partenaires</span>
         </p>
       </section>
 
@@ -604,7 +604,7 @@ export default function HomeAnimations() {
                 <div className="absolute top-3 left-3">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     property.transactionType === 'Vente' 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'bg-amber-600 text-white' 
                       : 'bg-purple-600 text-white'
                   }`}>
                     {property.transactionType}
@@ -629,7 +629,7 @@ export default function HomeAnimations() {
 
               {/* Content */}
               <div className="p-4">
-                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition line-clamp-2 mb-2">
+                <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 transition line-clamp-2 mb-2">
                   {property.title}
                 </h3>
 
@@ -654,7 +654,7 @@ export default function HomeAnimations() {
                 </div>
 
                 <div className="pt-3 border-t border-gray-100">
-                  <p className="text-xl font-bold text-blue-600">
+                  <p className="text-xl font-bold text-amber-600">
                     {new Intl.NumberFormat('fr-FR', { 
                       style: 'currency', 
                       currency: 'EUR',
@@ -673,7 +673,7 @@ export default function HomeAnimations() {
         <div className="text-center mt-12">
           <Link 
             href="/annonces"
-            className="group inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg text-lg font-medium hover:scale-105"
+            className="group inline-flex items-center gap-2 px-8 py-4 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-lg text-lg font-medium hover:scale-105"
           >
             Voir toutes les annonces
             <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -698,24 +698,24 @@ export default function HomeAnimations() {
               key={plan.name}
               className={`pricing-card rounded-xl p-8 ${
                 plan.highlight
-                  ? 'bg-blue-600 text-white shadow-2xl scale-105'
+                  ? 'bg-amber-600 text-white shadow-2xl scale-105'
                   : 'bg-white text-gray-900 shadow-sm border'
               }`}
             >
               <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-              <p className={plan.highlight ? 'text-blue-100' : 'text-gray-600'}>
+              <p className={plan.highlight ? 'text-amber-100' : 'text-gray-600'}>
                 {plan.description}
               </p>
               <div className="my-6">
                 <span className="text-4xl font-bold">{plan.price}</span>
-                <span className={plan.highlight ? 'text-blue-100' : 'text-gray-600'}>
+                <span className={plan.highlight ? 'text-amber-100' : 'text-gray-600'}>
                   /mois
                 </span>
               </div>
               <ul className="space-y-3 mb-8">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
-                    <CheckCircle2 className={`h-5 w-5 ${plan.highlight ? 'text-blue-200' : 'text-green-500'}`} />
+                    <CheckCircle2 className={`h-5 w-5 ${plan.highlight ? 'text-amber-200' : 'text-green-500'}`} />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -723,8 +723,8 @@ export default function HomeAnimations() {
               <button
                 className={`w-full py-3 rounded-lg font-medium transition hover:scale-105 ${
                   plan.highlight
-                    ? 'bg-white text-blue-600 hover:bg-gray-100'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-white text-amber-600 hover:bg-gray-100'
+                    : 'bg-amber-600 text-white hover:bg-amber-700'
                 }`}
               >
                 {plan.cta}
@@ -736,14 +736,14 @@ export default function HomeAnimations() {
 
       {/* CTA Section */}
       <section ref={ctaRef} className="container mx-auto px-4 py-20">
-        <div className="cta-section bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-12 text-center text-white shadow-2xl">
+        <div className="cta-section bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-12 text-center text-white shadow-2xl">
           <h2 className="text-4xl font-bold mb-4">
             Prêt à moderniser votre agence ?
           </h2>
-          <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
+          <p className="text-xl mb-8 text-amber-100 max-w-2xl mx-auto">
             Rejoignez des centaines d'agences qui ont déjà fait le choix de bienvuimmo
           </p>
-          <button className="group px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition shadow-lg text-lg font-medium inline-flex items-center gap-2 hover:scale-105">
+          <button className="group px-8 py-4 bg-white text-amber-600 rounded-lg hover:bg-gray-100 transition shadow-lg text-lg font-medium inline-flex items-center gap-2 hover:scale-105">
             Démarrer gratuitement
             <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
           </button>
@@ -756,7 +756,7 @@ export default function HomeAnimations() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="h-6 w-6 text-blue-400" />
+                <Building2 className="h-6 w-6 text-amber-400" />
                 <span className="text-xl font-bold text-white">bienvuimmo</span>
               </div>
               <p className="text-sm">

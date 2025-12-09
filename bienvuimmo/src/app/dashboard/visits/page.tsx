@@ -128,7 +128,7 @@ export default function VisitsPage() {
       case 'En attente':
         return 'bg-yellow-100 text-yellow-700';
       case 'Terminée':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-amber-100 text-amber-700';
       case 'Annulée':
         return 'bg-red-100 text-red-700';
       default:
@@ -194,7 +194,7 @@ export default function VisitsPage() {
               Calendrier
             </button>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
@@ -216,7 +216,7 @@ export default function VisitsPage() {
                 placeholder="Bien, contact, adresse..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               />
               <svg 
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" 
@@ -236,7 +236,7 @@ export default function VisitsPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             >
               <option value="all">Tous les statuts</option>
               <option value="Confirmée">Confirmée</option>
@@ -268,7 +268,7 @@ export default function VisitsPage() {
         </div>
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <p className="text-sm text-gray-600">Aujourd'hui</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">
+          <p className="text-2xl font-bold text-amber-600 mt-1">
             {visits.filter(v => v.date === new Date().toISOString().split('T')[0]).length}
           </p>
         </div>
@@ -310,7 +310,7 @@ export default function VisitsPage() {
                           <div className={`w-3 h-3 rounded-full ${
                             visit.status === 'Confirmée' ? 'bg-green-500' :
                             visit.status === 'En attente' ? 'bg-yellow-500' :
-                            visit.status === 'Terminée' ? 'bg-blue-500' :
+                            visit.status === 'Terminée' ? 'bg-amber-500' :
                             'bg-red-500'
                           }`} />
                         </div>

@@ -48,28 +48,28 @@ export default function ContactPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-blue-600" />
+            <Building2 className="h-8 w-8 text-amber-600" />
             <span className="text-2xl font-bold text-gray-900">bienvuimmo</span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/fonctionnalites" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/fonctionnalites" className="text-gray-600 hover:text-amber-600 transition">
               Fonctionnalités
             </Link>
-            <Link href="/tarifs" className="text-gray-600 hover:text-blue-600 transition">
+            <Link href="/tarifs" className="text-gray-600 hover:text-amber-600 transition">
               Tarifs
             </Link>
-            <Link href="/contact" className="text-blue-600 font-medium">
+            <Link href="/contact" className="text-amber-600 font-medium">
               Contact
             </Link>
-            <button className="px-4 py-2 text-blue-600 hover:text-blue-700 transition">
+            <button className="px-4 py-2 text-amber-600 hover:text-amber-700 transition">
               Connexion
             </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">
+            <button className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-md">
               Essai gratuit
             </button>
           </div>
@@ -100,7 +100,7 @@ export default function ContactPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
                   <input
                     type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
                     placeholder="Jean"
                   />
                 </div>
@@ -108,7 +108,7 @@ export default function ContactPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
                   <input
                     type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
                     placeholder="Dupont"
                   />
                 </div>
@@ -117,7 +117,7 @@ export default function ContactPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
                   placeholder="jean.dupont@agence.fr"
                 />
               </div>
@@ -125,13 +125,13 @@ export default function ContactPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
                 <input
                   type="tel"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
                   placeholder="06 12 34 56 78"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Sujet</label>
-                <select className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                <select className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition">
                   <option>Demande de démo</option>
                   <option>Question sur les tarifs</option>
                   <option>Support technique</option>
@@ -143,13 +143,13 @@ export default function ContactPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
                 <textarea
                   rows={5}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition resize-none"
                   placeholder="Décrivez votre demande..."
                 ></textarea>
               </div>
               <button
                 type="submit"
-                className="w-full py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg font-medium flex items-center justify-center gap-2 hover:scale-[1.02]"
+                className="w-full py-4 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-lg font-medium flex items-center justify-center gap-2 hover:scale-[1.02]"
               >
                 <Send className="h-5 w-5" />
                 Envoyer le message
@@ -160,8 +160,8 @@ export default function ContactPage() {
           {/* Infos de contact */}
           <div ref={infoRef} className="contact-info space-y-6">
             <div className="info-card bg-white rounded-xl p-6 shadow-sm border flex items-start gap-4">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Mail className="h-6 w-6 text-blue-600" />
+              <div className="p-3 bg-amber-100 rounded-lg">
+                <Mail className="h-6 w-6 text-amber-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
@@ -203,15 +203,15 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="info-card bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white">
+            <div className="info-card bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl p-6 text-white">
               <div className="flex items-center gap-3 mb-3">
                 <MessageSquare className="h-6 w-6" />
                 <h3 className="font-semibold text-lg">Chat en direct</h3>
               </div>
-              <p className="text-blue-100 mb-4">
+              <p className="text-amber-100 mb-4">
                 Besoin d'une réponse rapide ? Discutez avec notre équipe en temps réel.
               </p>
-              <button className="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition font-medium">
+              <button className="px-6 py-3 bg-white text-amber-600 rounded-lg hover:bg-gray-100 transition font-medium">
                 Démarrer le chat
               </button>
             </div>
@@ -225,7 +225,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="h-6 w-6 text-blue-400" />
+                <Building2 className="h-6 w-6 text-amber-400" />
                 <span className="text-xl font-bold text-white">bienvuimmo</span>
               </div>
               <p className="text-sm">

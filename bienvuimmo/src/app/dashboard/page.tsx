@@ -165,7 +165,7 @@ export default function DashboardPage() {
   const getActivityColor = (color: string) => {
     const colors = {
       purple: "bg-purple-100 text-purple-600",
-      blue: "bg-blue-100 text-blue-600",
+      blue: "bg-amber-100 text-amber-600",
       green: "bg-green-100 text-green-600",
       amber: "bg-amber-100 text-amber-600",
       stone: "bg-stone-100 text-stone-600"
@@ -192,8 +192,8 @@ export default function DashboardPage() {
         {/* Stat 1 */}
         <div className="bg-white rounded-2xl border border-stone-200 p-6 hover:shadow-lg hover:-translate-y-1 transition-all">
           <div className="flex items-start justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-50 rounded-xl flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-amber-600" />
             </div>
             <div className="flex items-center gap-1 px-2 py-1 bg-green-100 rounded-full">
               <TrendingUp className="w-3 h-3 text-green-600" />
@@ -215,9 +215,9 @@ export default function DashboardPage() {
             <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl flex items-center justify-center">
               <Users className="w-6 h-6 text-purple-600" />
             </div>
-            <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 rounded-full">
-              <Activity className="w-3 h-3 text-blue-600" />
-              <span className="text-xs font-semibold text-blue-600">+12</span>
+            <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 rounded-full">
+              <Activity className="w-3 h-3 text-amber-600" />
+              <span className="text-xs font-semibold text-amber-600">+12</span>
             </div>
           </div>
           <div>
@@ -312,8 +312,8 @@ export default function DashboardPage() {
         
         <div className="bg-white rounded-xl border border-stone-200 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 text-amber-600" />
             </div>
             <div>
               <p className="text-2xl font-bold text-stone-900">8.2k</p>
@@ -467,9 +467,9 @@ export default function DashboardPage() {
         <h2 className="text-lg font-bold text-stone-900 mb-2">Actions rapides</h2>
         <p className="text-sm text-stone-500 mb-6">Accédez rapidement aux fonctions principales</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button className="group flex items-center gap-3 p-4 bg-white hover:bg-blue-50 border border-stone-200 hover:border-blue-300 text-stone-700 hover:text-blue-700 rounded-xl transition-all hover:shadow-md hover:-translate-y-0.5">
-            <div className="w-10 h-10 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors">
-              <Plus className="w-5 h-5 text-blue-600" />
+          <button className="group flex items-center gap-3 p-4 bg-white hover:bg-amber-50 border border-stone-200 hover:border-amber-300 text-stone-700 hover:text-amber-700 rounded-xl transition-all hover:shadow-md hover:-translate-y-0.5">
+            <div className="w-10 h-10 bg-amber-100 group-hover:bg-amber-200 rounded-lg flex items-center justify-center transition-colors">
+              <Plus className="w-5 h-5 text-amber-600" />
             </div>
             <span className="font-semibold">Ajouter un bien</span>
           </button>

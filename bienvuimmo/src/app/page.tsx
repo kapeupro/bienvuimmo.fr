@@ -172,11 +172,11 @@ export default function HomePage() {
   const getColorClasses = (color: string) => {
     const colors: Record<string, string> = {
       amber: "from-amber-500 to-orange-500 bg-amber-50 text-amber-600 border-amber-200",
-      blue: "from-blue-500 to-indigo-500 bg-blue-50 text-blue-600 border-blue-200",
+      blue: "from-amber-500 to-orange-500 bg-amber-50 text-amber-600 border-amber-200",
       purple: "from-purple-500 to-pink-500 bg-purple-50 text-purple-600 border-purple-200",
       green: "from-emerald-500 to-teal-500 bg-emerald-50 text-emerald-600 border-emerald-200",
       rose: "from-rose-500 to-red-500 bg-rose-50 text-rose-600 border-rose-200",
-      cyan: "from-cyan-500 to-blue-500 bg-cyan-50 text-cyan-600 border-cyan-200"
+      cyan: "from-cyan-500 to-orange-500 bg-cyan-50 text-cyan-600 border-cyan-200"
     };
     return colors[color];
   };
