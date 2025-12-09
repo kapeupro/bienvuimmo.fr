@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { Building2, Mail, Phone, MapPin, Send, Clock, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function ContactPage() {
   const formRef = useRef<HTMLDivElement>(null);
@@ -50,34 +52,10 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-orange-50">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-amber-600" />
-            <span className="text-2xl font-bold text-gray-900">bienvuimmo</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/fonctionnalites" className="text-gray-600 hover:text-amber-600 transition">
-              Fonctionnalités
-            </Link>
-            <Link href="/tarifs" className="text-gray-600 hover:text-amber-600 transition">
-              Tarifs
-            </Link>
-            <Link href="/contact" className="text-amber-600 font-medium">
-              Contact
-            </Link>
-            <button className="px-4 py-2 text-amber-600 hover:text-amber-700 transition">
-              Connexion
-            </button>
-            <button className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition shadow-md">
-              Essai gratuit
-            </button>
-          </div>
-        </nav>
-      </header>
+      <Header />
 
       {/* Hero */}
-      <section className="container mx-auto px-4 py-16 text-center">
+      <section className="container mx-auto px-4 py-16 pt-32 text-center">
         <div className="contact-title max-w-3xl mx-auto">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
             Contactez-nous
@@ -220,48 +198,7 @@ export default function ContactPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Building2 className="h-6 w-6 text-amber-400" />
-                <span className="text-xl font-bold text-white">bienvuimmo</span>
-              </div>
-              <p className="text-sm">
-                Le SaaS immobilier qui simplifie votre quotidien.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-white mb-4">Produit</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/fonctionnalites" className="hover:text-white transition">Fonctionnalités</Link></li>
-                <li><Link href="/tarifs" className="hover:text-white transition">Tarifs</Link></li>
-                <li><Link href="#" className="hover:text-white transition">Démo</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-white mb-4">Entreprise</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="#" className="hover:text-white transition">À propos</Link></li>
-                <li><Link href="#" className="hover:text-white transition">Blog</Link></li>
-                <li><Link href="#" className="hover:text-white transition">Carrières</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-white mb-4">Support</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="#" className="hover:text-white transition">Documentation</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition">Contact</Link></li>
-                <li><Link href="#" className="hover:text-white transition">CGV</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
-            <p>&copy; 2025 bienvuimmo. Tous droits réservés.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
