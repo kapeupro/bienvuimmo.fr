@@ -1,0 +1,15 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/annonces/page": "app/annonces/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/annonces/[id]/page": "app/annonces/[id]/page.js",
+  "/fonctionnalites/page": "app/fonctionnalites/page.js",
+  "/page": "app/page.js",
+  "/tarifs/page": "app/tarifs/page.js",
+  "/dashboard/contacts/page": "app/dashboard/contacts/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/properties/page": "app/dashboard/properties/page.js",
+  "/dashboard/mandates/page": "app/dashboard/mandates/page.js",
+  "/dashboard/visits/page": "app/dashboard/visits/page.js",
+  "/dashboard/settings/page": "app/dashboard/settings/page.js"
+}

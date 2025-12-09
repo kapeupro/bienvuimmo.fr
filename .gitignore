@@ -1,9 +1,9 @@
-bienvuimmo/node_modules/
-bienvuimmo/frontend/node_modules/
-bienvuimmo/.next/
-bienvuimmo/.next/
-bienvuimmo/frontend/node_modules/
-bienvuimmo/backend/node_modules/
-bienvuimmo/node_modules/
+# Node modules - exclus (trop gros)
 **/node_modules/
-**/.next/
+
+# Mais on INCLUT .next pour o2switch (build pré-compilé)
+# Ne PAS exclure .next pour permettre le déploiement sur o2switch
+
+# Fichiers locaux
+.env.local
+*.log
