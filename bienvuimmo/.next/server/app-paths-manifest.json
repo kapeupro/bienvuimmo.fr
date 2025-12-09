@@ -1,16 +1,21 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/annonces/[id]/page": "app/annonces/[id]/page.js",
   "/annonces/page": "app/annonces/page.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/auth/logout/route": "app/api/auth/logout/route.js",
+  "/api/auth/me/route": "app/api/auth/me/route.js",
+  "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/connexion/page": "app/connexion/page.js",
   "/contact/page": "app/contact/page.js",
   "/fonctionnalites/page": "app/fonctionnalites/page.js",
   "/inscription/page": "app/inscription/page.js",
   "/page": "app/page.js",
   "/tarifs/page": "app/tarifs/page.js",
-  "/annonces/[id]/page": "app/annonces/[id]/page.js",
   "/dashboard/contacts/page": "app/dashboard/contacts/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/dashboard/properties/page": "app/dashboard/properties/page.js",
-  "/dashboard/mandates/page": "app/dashboard/mandates/page.js",
   "/dashboard/settings/page": "app/dashboard/settings/page.js",
-  "/dashboard/visits/page": "app/dashboard/visits/page.js"
+  "/dashboard/visits/page": "app/dashboard/visits/page.js",
+  "/dashboard/mandates/page": "app/dashboard/mandates/page.js"
 }

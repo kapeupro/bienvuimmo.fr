@@ -1,6 +1,6 @@
-// Configuration Prisma
+// Configuration Prisma pour MySQL (o2switch)
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 

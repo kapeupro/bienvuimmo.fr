@@ -126,12 +126,43 @@ export default function InscriptionPage() {
     if (!validateStep3()) return;
     
     setIsLoading(true);
-    
-    // Simuler l'inscription
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Rediriger vers le dashboard
-    window.location.href = '/dashboard';
+    setErrors({});
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          agencyName: formData.agencyName,
+          agencyAddress: formData.agencyAddress,
+          agencyCity: formData.agencyCity,
+          agencyPostalCode: formData.agencyPostalCode,
+          siret: formData.siret,
+          carteT: formData.carteT,
+          plan: formData.plan,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erreur lors de l\'inscription');
+      }
+
+      // Rediriger vers le dashboard
+      window.location.href = '/dashboard';
+    } catch (err) {
+      setErrors({ submit: err instanceof Error ? err.message : 'Une erreur est survenue' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const plans = [
