@@ -35,6 +35,8 @@ const ROUTES = {
   '/contact': '/contact.html',
   '/tarifs': '/tarifs.html',
   '/fonctionnalites': '/fonctionnalites.html',
+  '/inscription': '/inscription.html',
+  '/connexion': '/connexion.html',
   '/dashboard': '/dashboard.html',
   '/dashboard/contacts': '/dashboard/contacts.html',
   '/dashboard/mandates': '/dashboard/mandates.html',
