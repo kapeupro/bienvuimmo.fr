@@ -18,9 +18,11 @@ import {
   LogOut,
   Sparkles
 } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { user, logout, isLoading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -34,6 +36,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   ];
 
   const isActive = (path: string) => pathname === path;
+
+  // Générer les initiales de l'utilisateur
+  const userInitials = user 
+    ? `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase() || 'U'
+    : 'U';
+  const userName = user ? `${user.firstName} ${user.lastName}` : 'Utilisateur';
+  const userEmail = user?.email || '';
 
   return (
     <div className="min-h-screen bg-[#FAFAF9]" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
@@ -81,17 +90,43 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
           {/* User Profile */}
           <div className="p-4 border-t border-stone-100">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-stone-50">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
-                MD
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-stone-900 truncate">Marie Dupont</p>
-                <p className="text-xs text-stone-500 truncate">marie@agence.fr</p>
-              </div>
-              <button className="p-1 hover:bg-stone-200 rounded-lg transition-colors">
-                <ChevronDown className="w-4 h-4 text-stone-400" />
+            <div className="relative">
+              <button 
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-stone-50 hover:bg-stone-100 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
+                  {userInitials}
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="text-sm font-semibold text-stone-900 truncate">{userName}</p>
+                  <p className="text-xs text-stone-500 truncate">{userEmail}</p>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-stone-400 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
               </button>
+              
+              {/* Dropdown menu */}
+              {showUserMenu && (
+                <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl shadow-lg border border-stone-200 overflow-hidden">
+                  <div className="p-2">
+                    <Link 
+                      href="/dashboard/settings"
+                      className="flex items-center gap-3 px-3 py-2 text-sm text-stone-600 hover:bg-stone-50 rounded-lg transition-colors"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <Settings className="w-4 h-4" />
+                      Paramètres
+                    </Link>
+                    <button 
+                      onClick={logout}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Déconnexion
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

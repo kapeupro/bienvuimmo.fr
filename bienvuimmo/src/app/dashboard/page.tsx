@@ -19,10 +19,14 @@ import {
   Phone,
   Mail,
   BarChart3,
-  Activity
+  Activity,
+  LogOut
 } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 export default function DashboardPage() {
+  const { user, isLoading, logout } = useAuth();
+
   // Données statiques pour la démonstration
   const stats = {
     totalProperties: 147,
@@ -173,18 +177,44 @@ export default function DashboardPage() {
     return colors[color as keyof typeof colors] || colors.stone;
   };
 
+  // Afficher un loading
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-stone-600">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const userName = user?.firstName || 'Utilisateur';
+
   return (
     <div className="space-y-6">
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-stone-900">Bonjour, Marie 👋</h1>
-          <p className="mt-1 text-stone-500">Voici un aperçu de votre activité aujourd&apos;hui</p>
+          <h1 className="text-3xl font-bold text-stone-900">Bonjour, {userName} 👋</h1>
+          <p className="mt-1 text-stone-500">
+            {user?.agency?.name && <span className="text-amber-600 font-medium">{user.agency.name}</span>}
+            {user?.agency?.name ? ' — ' : ''}Voici un aperçu de votre activité aujourd&apos;hui
+          </p>
         </div>
-        <button className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-amber-500/25 transition-all">
-          <Plus className="w-4 h-4" />
-          <span>Ajouter un bien</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={logout}
+            className="flex items-center gap-2 px-4 py-2.5 text-stone-600 hover:text-red-600 hover:bg-red-50 rounded-xl text-sm font-medium transition-all"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">Déconnexion</span>
+          </button>
+          <button className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-amber-500/25 transition-all">
+            <Plus className="w-4 h-4" />
+            <span>Ajouter un bien</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats grid */}

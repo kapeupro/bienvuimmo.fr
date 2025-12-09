@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface User {
   id: string;
@@ -9,7 +9,7 @@ interface User {
   firstName: string;
   lastName: string;
   role: string;
-  agency: {
+  agency?: {
     id: string;
     name: string;
     plan: string;
@@ -21,7 +21,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -48,10 +48,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
-      const response = await fetch('/api/auth/me');
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include',
+      });
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
@@ -63,16 +66,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     refreshUser();
-  }, []);
+  }, [refreshUser]);
 
-  const login = async (email: string, password: string) => {
+  // Redirection automatique si non authentifié sur pages protégées
+  useEffect(() => {
+    if (!isLoading && !user && pathname?.startsWith('/dashboard')) {
+      router.push('/connexion');
+    }
+  }, [isLoading, user, pathname, router]);
+
+  const login = async (email: string, password: string, rememberMe = false) => {
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
 
@@ -80,6 +91,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!response.ok) {
       throw new Error(data.error || 'Erreur de connexion');
+    }
+
+    // Stocker le token dans localStorage si "se souvenir de moi"
+    if (rememberMe && data.token) {
+      localStorage.setItem('auth_token', data.token);
     }
 
     setUser(data.user);
@@ -90,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(registerData),
     });
 
@@ -99,12 +116,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(data.error || 'Erreur lors de l\'inscription');
     }
 
+    // Stocker le token
+    if (data.token) {
+      localStorage.setItem('auth_token', data.token);
+    }
+
     setUser(data.user);
     router.push('/dashboard');
   };
 
   const logout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
+    try {
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch {
+      // Ignorer les erreurs de déconnexion
+    }
+    localStorage.removeItem('auth_token');
+    sessionStorage.removeItem('auth_token');
     setUser(null);
     router.push('/connexion');
   };

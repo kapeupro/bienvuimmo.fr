@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -17,15 +17,20 @@ import {
   Shield,
   Zap,
   Users,
-  Building2
+  Building2,
+  AlertCircle,
+  CheckCircle2
 } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
 
 export default function InscriptionPage() {
   const router = useRouter();
+  const { register, isAuthenticated, isLoading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     // Étape 1 - Informations personnelles
     firstName: '',
@@ -48,6 +53,13 @@ export default function InscriptionPage() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Rediriger si déjà connecté
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [authLoading, isAuthenticated, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -123,6 +135,18 @@ export default function InscriptionPage() {
     if (step > 1) setStep(step - 1);
   };
 
+  // Afficher un loading si on vérifie l'authentification
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/30 to-orange-50/30 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-stone-600">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -132,38 +156,22 @@ export default function InscriptionPage() {
     setErrors({});
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-          agencyName: formData.agencyName,
-          agencyAddress: formData.agencyAddress,
-          agencyCity: formData.agencyCity,
-          agencyPostalCode: formData.agencyPostalCode,
-          siret: formData.siret,
-          carteT: formData.carteT,
-          plan: formData.plan,
-        }),
+      await register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        agencyName: formData.agencyName,
+        agencyAddress: formData.agencyAddress,
+        agencyCity: formData.agencyCity,
+        agencyPostalCode: formData.agencyPostalCode,
+        siret: formData.siret,
+        carteT: formData.carteT,
+        plan: formData.plan,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'inscription');
-      }
-
-      // Stocker le token
-      localStorage.setItem('token', data.token);
       
-      // Rediriger vers le dashboard
-      router.push('/dashboard');
+      setSuccess('Compte créé avec succès ! Redirection...');
     } catch (err) {
       setErrors({ submit: err instanceof Error ? err.message : 'Une erreur est survenue' });
     } finally {
@@ -265,8 +273,17 @@ export default function InscriptionPage() {
 
         {/* Error message */}
         {errors.submit && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-center">
-            {errors.submit}
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center justify-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <span className="text-red-600">{errors.submit}</span>
+          </div>
+        )}
+
+        {/* Success message */}
+        {success && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center justify-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+            <span className="text-green-600">{success}</span>
           </div>
         )}
 
