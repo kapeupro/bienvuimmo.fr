@@ -1,0 +1,33 @@
+# Fichiers de configuration o2switch
+.env.production
+
+# Logs
+*.log
+logs/
+
+# Fichiers temporaires
+tmp/
+.temp/
+
+# Build
+.next/
+out/
+
+# Dépendances
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+coverage/
+.nyc_output/
+
+# Backup
+*.sql
+backup/

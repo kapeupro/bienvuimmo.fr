@@ -1,0 +1,339 @@
+// Configuration Prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ========================================
+// SCHEMA SAAS IMMOBILIER - MVP
+// ========================================
+
+// Gestion Multi-tenant
+model Agency {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  phone       String?
+  address     String?
+  siret       String?  @unique
+  logo        String?
+  plan        Plan     @default(FREE)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  properties  Property[]
+  contacts    Contact[]
+  mandates    Mandate[]
+
+  @@index([email])
+}
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
+// Utilisateurs de l'agence
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  firstName   String
+  lastName    String
+  phone       String?
+  role        Role     @default(AGENT)
+  isActive    Boolean  @default(true)
+  agencyId    String
+  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  properties  Property[]
+  activities  Activity[]
+
+  @@index([agencyId])
+  @@index([email])
+}
+
+enum Role {
+  ADMIN
+  AGENT
+  ASSISTANT
+}
+
+// Biens immobiliers
+model Property {
+  id              String         @id @default(cuid())
+  reference       String         @unique
+  title           String
+  description     String?        @db.Text
+  type            PropertyType
+  transactionType TransactionType
+  status          PropertyStatus @default(AVAILABLE)
+  
+  // Localisation
+  address         String
+  city            String
+  postalCode      String
+  department      String?
+  region          String?
+  latitude        Float?
+  longitude       Float?
+  
+  // Caractéristiques
+  price           Float
+  surface         Float?
+  rooms           Int?
+  bedrooms        Int?
+  bathrooms       Int?
+  floor           Int?
+  totalFloors     Int?
+  buildYear       Int?
+  
+  // DPE
+  energyClass     String?
+  gesClass        String?
+  
+  // Photos et documents
+  photos          PropertyPhoto[]
+  documents       PropertyDocument[]
+  
+  // Relations
+  agencyId        String
+  agency          Agency         @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  agentId         String
+  agent           User           @relation(fields: [agentId], references: [id])
+  mandateId       String?        @unique
+  mandate         Mandate?       @relation(fields: [mandateId], references: [id])
+  
+  visits          Visit[]
+  matches         Match[]
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([agencyId])
+  @@index([agentId])
+  @@index([city])
+  @@index([status])
+  @@index([type])
+  @@index([transactionType])
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  LAND
+  COMMERCIAL
+  PARKING
+  OTHER
+}
+
+enum TransactionType {
+  SALE
+  RENT
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  UNDER_OFFER
+  SOLD
+  RENTED
+  ARCHIVED
+}
+
+// Photos des biens
+model PropertyPhoto {
+  id          String   @id @default(cuid())
+  url         String
+  title       String?
+  order       Int      @default(0)
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([propertyId])
+}
+
+// Documents des biens
+model PropertyDocument {
+  id          String   @id @default(cuid())
+  name        String
+  url         String
+  type        String
+  size        Int
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([propertyId])
+}
+
+// Mandats
+model Mandate {
+  id              String       @id @default(cuid())
+  reference       String       @unique
+  type            MandateType
+  startDate       DateTime
+  endDate         DateTime
+  exclusivity     Boolean      @default(false)
+  commission      Float
+  commissionType  String       @default("PERCENTAGE")
+  signedAt        DateTime?
+  documentUrl     String?
+  
+  agencyId        String
+  agency          Agency       @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  contactId       String
+  contact         Contact      @relation(fields: [contactId], references: [id])
+  property        Property?
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([agencyId])
+  @@index([contactId])
+}
+
+enum MandateType {
+  SALE
+  RENT
+  SEARCH
+}
+
+// Contacts (acquéreurs, vendeurs, locataires)
+model Contact {
+  id          String        @id @default(cuid())
+  type        ContactType
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  address     String?
+  city        String?
+  postalCode  String?
+  
+  // Critères de recherche (pour acquéreurs)
+  searchCriteria Json?
+  
+  agencyId    String
+  agency      Agency        @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  
+  mandates    Mandate[]
+  visits      Visit[]
+  matches     Match[]
+  activities  Activity[]
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([agencyId])
+  @@index([email])
+  @@index([type])
+}
+
+enum ContactType {
+  BUYER
+  SELLER
+  TENANT
+  LANDLORD
+}
+
+// Visites
+model Visit {
+  id          String       @id @default(cuid())
+  date        DateTime
+  duration    Int          @default(60)
+  status      VisitStatus  @default(SCHEDULED)
+  notes       String?      @db.Text
+  
+  propertyId  String
+  property    Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  contactId   String
+  contact     Contact      @relation(fields: [contactId], references: [id])
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([propertyId])
+  @@index([contactId])
+  @@index([date])
+}
+
+enum VisitStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// Matching bien/acquéreur
+model Match {
+  id          String   @id @default(cuid())
+  score       Int      // Score de matching 0-100
+  status      MatchStatus @default(PENDING)
+  notes       String?  @db.Text
+  
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([propertyId, contactId])
+  @@index([propertyId])
+  @@index([contactId])
+  @@index([score])
+}
+
+enum MatchStatus {
+  PENDING
+  CONTACTED
+  INTERESTED
+  NOT_INTERESTED
+  ARCHIVED
+}
+
+// Journal d'activité
+model Activity {
+  id          String       @id @default(cuid())
+  type        ActivityType
+  title       String
+  description String?      @db.Text
+  metadata    Json?
+  
+  userId      String?
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  contactId   String?
+  contact     Contact?     @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime     @default(now())
+
+  @@index([userId])
+  @@index([contactId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+enum ActivityType {
+  PROPERTY_CREATED
+  PROPERTY_UPDATED
+  CONTACT_CREATED
+  CONTACT_UPDATED
+  VISIT_SCHEDULED
+  VISIT_COMPLETED
+  MANDATE_SIGNED
+  MATCH_CREATED
+  EMAIL_SENT
+  CALL_MADE
+  NOTE_ADDED
+}

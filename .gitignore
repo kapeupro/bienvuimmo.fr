@@ -1,0 +1,9 @@
+bienvuimmo/node_modules/
+bienvuimmo/frontend/node_modules/
+bienvuimmo/.next/
+bienvuimmo/.next/
+bienvuimmo/frontend/node_modules/
+bienvuimmo/backend/node_modules/
+bienvuimmo/node_modules/
+**/node_modules/
+**/.next/
