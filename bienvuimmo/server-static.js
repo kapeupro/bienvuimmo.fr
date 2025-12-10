@@ -4,6 +4,9 @@
  * - Gère les API d'authentification avec MySQL direct
  */
 
+// Charger les variables d'environnement depuis .env
+require('dotenv').config();
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
