@@ -1,78 +1,370 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { User, Building2, Lock, Bell, Loader2, Save, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
+
+interface UserSettings {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  role: string;
+}
+
+interface AgencySettings {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  siret: string | null;
+  plan: string;
+}
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('agency');
+  const { user: authUser } = useAuth();
+  const [activeTab, setActiveTab] = useState('profile');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  
+  const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
+  const [agencySettings, setAgencySettings] = useState<AgencySettings | null>(null);
+  
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings', { credentials: 'include' });
+      if (!response.ok) throw new Error('Erreur lors du chargement');
+      
+      const data = await response.json();
+      setUserSettings(data.user);
+      setAgencySettings(data.agency);
+    } catch (err) {
+      console.error(err);
+      setMessage({ type: 'error', text: 'Impossible de charger les paramètres' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          user: {
+            firstName: userSettings?.firstName,
+            lastName: userSettings?.lastName,
+            phone: userSettings?.phone,
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erreur lors de la sauvegarde');
+      }
+
+      setMessage({ type: 'success', text: 'Profil mis à jour avec succès' });
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
+      setMessage({ type: 'error', text: errorMessage });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveAgency = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          agency: {
+            name: agencySettings?.name,
+            email: agencySettings?.email,
+            phone: agencySettings?.phone,
+            address: agencySettings?.address,
+            siret: agencySettings?.siret,
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erreur lors de la sauvegarde');
+      }
+
+      setMessage({ type: 'success', text: 'Informations de l\'agence mises à jour' });
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
+      setMessage({ type: 'error', text: errorMessage });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setMessage({ type: 'error', text: 'Les mots de passe ne correspondent pas' });
+      return;
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      setMessage({ type: 'error', text: 'Le mot de passe doit contenir au moins 8 caractères' });
+      return;
+    }
+
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/settings/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erreur lors du changement de mot de passe');
+      }
+
+      setMessage({ type: 'success', text: 'Mot de passe modifié avec succès' });
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors du changement de mot de passe';
+      setMessage({ type: 'error', text: errorMessage });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getPlanLabel = (plan: string) => {
+    switch (plan) {
+      case 'FREE': return 'Starter (Gratuit)';
+      case 'PRO': return 'Pro';
+      case 'BUSINESS': return 'Business';
+      default: return plan;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Paramètres</h1>
-        <p className="mt-2 text-gray-600">Gérez les paramètres de votre agence</p>
+        <p className="mt-2 text-gray-600">Gérez votre profil et les paramètres de votre agence</p>
       </div>
+
+      {/* Message */}
+      {message && (
+        <div className={`flex items-center gap-3 p-4 rounded-lg ${
+          message.type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+        }`}>
+          {message.type === 'success' ? (
+            <CheckCircle className="w-5 h-5 text-green-600" />
+          ) : (
+            <AlertCircle className="w-5 h-5 text-red-600" />
+          )}
+          <p className={message.type === 'success' ? 'text-green-700' : 'text-red-700'}>
+            {message.text}
+          </p>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
         <nav className="-mb-px flex space-x-8">
           <button
-            onClick={() => setActiveTab('agency')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'agency'
+            onClick={() => setActiveTab('profile')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+              activeTab === 'profile'
                 ? 'border-amber-500 text-amber-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Agence
+            <User className="w-4 h-4" />
+            Mon profil
           </button>
+          {authUser?.role === 'ADMIN' && (
+            <button
+              onClick={() => setActiveTab('agency')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+                activeTab === 'agency'
+                  ? 'border-amber-500 text-amber-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Building2 className="w-4 h-4" />
+              Agence
+            </button>
+          )}
           <button
-            onClick={() => setActiveTab('users')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'users'
+            onClick={() => setActiveTab('security')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+              activeTab === 'security'
                 ? 'border-amber-500 text-amber-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Utilisateurs
-          </button>
-          <button
-            onClick={() => setActiveTab('subscription')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'subscription'
-                ? 'border-amber-500 text-amber-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Abonnement
+            <Lock className="w-4 h-4" />
+            Sécurité
           </button>
           <button
             onClick={() => setActiveTab('notifications')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+            className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
               activeTab === 'notifications'
                 ? 'border-amber-500 text-amber-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
+            <Bell className="w-4 h-4" />
             Notifications
           </button>
         </nav>
       </div>
 
-      {/* Agency Settings */}
-      {activeTab === 'agency' && (
+      {/* Profile Tab */}
+      {activeTab === 'profile' && userSettings && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">Informations personnelles</h2>
+          <form onSubmit={handleSaveProfile} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Prénom
+                </label>
+                <input
+                  type="text"
+                  value={userSettings.firstName || ''}
+                  onChange={(e) => setUserSettings({ ...userSettings, firstName: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nom
+                </label>
+                <input
+                  type="text"
+                  value={userSettings.lastName || ''}
+                  onChange={(e) => setUserSettings({ ...userSettings, lastName: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={userSettings.email || ''}
+                  disabled
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500"
+                />
+                <p className="mt-1 text-xs text-gray-500">L&apos;email ne peut pas être modifié</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Téléphone
+                </label>
+                <input
+                  type="tel"
+                  value={userSettings.phone || ''}
+                  onChange={(e) => setUserSettings({ ...userSettings, phone: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Rôle
+              </label>
+              <input
+                type="text"
+                value={userSettings.role === 'ADMIN' ? 'Administrateur' : 'Agent'}
+                disabled
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors disabled:opacity-50"
+              >
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Enregistrer
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Agency Tab */}
+      {activeTab === 'agency' && agencySettings && (
         <div className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Informations de l'agence</h2>
-            <form className="space-y-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Informations de l&apos;agence</h2>
+            <form onSubmit={handleSaveAgency} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nom de l'agence
+                    Nom de l&apos;agence
                   </label>
                   <input
                     type="text"
-                    defaultValue="BienvuImmo"
+                    value={agencySettings.name || ''}
+                    onChange={(e) => setAgencySettings({ ...agencySettings, name: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                   />
                 </div>
@@ -82,7 +374,8 @@ export default function SettingsPage() {
                   </label>
                   <input
                     type="text"
-                    defaultValue="123 456 789 00012"
+                    value={agencySettings.siret || ''}
+                    onChange={(e) => setAgencySettings({ ...agencySettings, siret: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                   />
                 </div>
@@ -91,11 +384,12 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
+                    Email de l&apos;agence
                   </label>
                   <input
                     type="email"
-                    defaultValue="contact@bienvuimmo.fr"
+                    value={agencySettings.email || ''}
+                    onChange={(e) => setAgencySettings({ ...agencySettings, email: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                   />
                 </div>
@@ -105,7 +399,8 @@ export default function SettingsPage() {
                   </label>
                   <input
                     type="tel"
-                    defaultValue="+33 1 23 45 67 89"
+                    value={agencySettings.phone || ''}
+                    onChange={(e) => setAgencySettings({ ...agencySettings, phone: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                   />
                 </div>
@@ -117,255 +412,181 @@ export default function SettingsPage() {
                 </label>
                 <input
                   type="text"
-                  defaultValue="15 rue de la République, 75001 Paris"
+                  value={agencySettings.address || ''}
+                  onChange={(e) => setAgencySettings({ ...agencySettings, address: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Logo de l'agence
-                </label>
-                <div className="flex items-center gap-4">
-                  <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Changer le logo
-                  </button>
-                </div>
-              </div>
-
               <div className="flex justify-end gap-3 pt-4">
                 <button
-                  type="button"
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+                  disabled={saving}
+                  className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors disabled:opacity-50"
                 >
+                  {saving ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
                   Enregistrer
                 </button>
               </div>
             </form>
           </div>
-        </div>
-      )}
 
-      {/* Users Settings */}
-      {activeTab === 'users' && (
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Utilisateurs</h2>
-              <button className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Inviter un utilisateur
-              </button>
-            </div>
-
-            <div className="divide-y divide-gray-200">
-              {[
-                { name: 'Sophie Martin', email: 'sophie.martin@bienvuimmo.fr', role: 'Admin', active: true },
-                { name: 'Jean Dupont', email: 'jean.dupont@bienvuimmo.fr', role: 'Agent', active: true },
-                { name: 'Marie Dubois', email: 'marie.dubois@bienvuimmo.fr', role: 'Agent', active: true },
-              ].map((user, idx) => (
-                <div key={idx} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center text-white font-semibold">
-                      {user.name.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">{user.name}</h3>
-                      <p className="text-sm text-gray-500">{user.email}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-medium rounded-full">
-                      {user.role}
-                    </span>
-                    <span className={`px-3 py-1 text-sm font-medium rounded-full ${
-                      user.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                    }`}>
-                      {user.active ? 'Actif' : 'Inactif'}
-                    </span>
-                    <button className="p-2 text-gray-600 hover:text-gray-900">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Subscription Settings */}
-      {activeTab === 'subscription' && (
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Plan actuel</h2>
-            
-            <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-6 text-white mb-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold">Plan PRO</h3>
-                  <p className="text-amber-100 mt-2">Profitez de toutes les fonctionnalités avancées</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold">49€</p>
-                  <p className="text-amber-100">/mois</p>
-                </div>
-              </div>
-              
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>100 biens illimités</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>5 utilisateurs</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>Support prioritaire</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>API access</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          {/* Plan Info */}
+          <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-6 text-white">
+            <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-600">Prochain paiement</p>
-                <p className="font-semibold text-gray-900">10 janvier 2025</p>
+                <h3 className="text-xl font-bold">Plan {getPlanLabel(agencySettings.plan)}</h3>
+                <p className="text-amber-100 mt-2">Votre abonnement actuel</p>
               </div>
-              <button className="px-4 py-2 text-amber-600 hover:text-amber-700 font-medium">
+              <button className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-medium transition-colors">
                 Changer de plan
               </button>
             </div>
           </div>
-
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Historique de facturation</h2>
-            <div className="divide-y divide-gray-200">
-              {[
-                { date: '2024-12-01', amount: 49, status: 'Payée' },
-                { date: '2024-11-01', amount: 49, status: 'Payée' },
-                { date: '2024-10-01', amount: 49, status: 'Payée' },
-              ].map((invoice, idx) => (
-                <div key={idx} className="py-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      Facture du {new Date(invoice.date).toLocaleDateString('fr-FR')}
-                    </p>
-                    <p className="text-sm text-gray-500">Plan PRO</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="font-semibold text-gray-900">
-                      {invoice.amount}€
-                    </span>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
-                      {invoice.status}
-                    </span>
-                    <button className="text-amber-600 hover:text-amber-700">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
 
-      {/* Notifications Settings */}
-      {activeTab === 'notifications' && (
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Préférences de notification</h2>
-            
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-4">Notifications email</h3>
-                <div className="space-y-3">
-                  {[
-                    { label: 'Nouvelle demande de visite', enabled: true },
-                    { label: 'Nouveau contact', enabled: true },
-                    { label: 'Mandat expirant bientôt', enabled: true },
-                    { label: 'Rapport hebdomadaire', enabled: false },
-                  ].map((notif, idx) => (
-                    <label key={idx} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg cursor-pointer">
-                      <span className="text-sm text-gray-700">{notif.label}</span>
-                      <div className="relative inline-block w-10 mr-2 align-middle select-none">
-                        <input
-                          type="checkbox"
-                          defaultChecked={notif.enabled}
-                          className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                        />
-                        <label className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-4">Notifications push</h3>
-                <div className="space-y-3">
-                  {[
-                    { label: 'Messages urgents', enabled: true },
-                    { label: 'Rappels de visite', enabled: true },
-                  ].map((notif, idx) => (
-                    <label key={idx} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg cursor-pointer">
-                      <span className="text-sm text-gray-700">{notif.label}</span>
-                      <div className="relative inline-block w-10 mr-2 align-middle select-none">
-                        <input
-                          type="checkbox"
-                          defaultChecked={notif.enabled}
-                          className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                        />
-                        <label className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
-                      </div>
-                    </label>
-                  ))}
-                </div>
+      {/* Security Tab */}
+      {activeTab === 'security' && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">Changer le mot de passe</h2>
+          <form onSubmit={handleChangePassword} className="space-y-6 max-w-md">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Mot de passe actuel
+              </label>
+              <div className="relative">
+                <input
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nouveau mot de passe
+              </label>
+              <div className="relative">
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                  required
+                  minLength={8}
+                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+              <p className="mt-1 text-xs text-gray-500">Au moins 8 caractères</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Confirmer le nouveau mot de passe
+              </label>
+              <input
+                type="password"
+                value={passwordData.confirmPassword}
+                onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
               <button
-                type="button"
-                className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+                type="submit"
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors disabled:opacity-50"
               >
-                Enregistrer les préférences
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Lock className="w-4 h-4" />
+                )}
+                Changer le mot de passe
               </button>
             </div>
+          </form>
+        </div>
+      )}
+
+      {/* Notifications Tab */}
+      {activeTab === 'notifications' && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">Préférences de notification</h2>
+          
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-4">Notifications email</h3>
+              <div className="space-y-3">
+                {[
+                  { id: 'new_visit', label: 'Nouvelle demande de visite', defaultChecked: true },
+                  { id: 'new_contact', label: 'Nouveau contact', defaultChecked: true },
+                  { id: 'mandate_expiring', label: 'Mandat expirant bientôt', defaultChecked: true },
+                  { id: 'weekly_report', label: 'Rapport hebdomadaire', defaultChecked: false },
+                ].map((notif) => (
+                  <label key={notif.id} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg cursor-pointer">
+                    <span className="text-sm text-gray-700">{notif.label}</span>
+                    <input
+                      type="checkbox"
+                      defaultChecked={notif.defaultChecked}
+                      className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-4">Notifications push</h3>
+              <div className="space-y-3">
+                {[
+                  { id: 'urgent', label: 'Messages urgents', defaultChecked: true },
+                  { id: 'visit_reminder', label: 'Rappels de visite', defaultChecked: true },
+                ].map((notif) => (
+                  <label key={notif.id} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg cursor-pointer">
+                    <span className="text-sm text-gray-700">{notif.label}</span>
+                    <input
+                      type="checkbox"
+                      defaultChecked={notif.defaultChecked}
+                      className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+            <button
+              type="button"
+              className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+            >
+              <Save className="w-4 h-4" />
+              Enregistrer les préférences
+            </button>
           </div>
         </div>
       )}
