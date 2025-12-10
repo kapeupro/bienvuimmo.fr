@@ -32,6 +32,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     { name: 'Contacts', href: '/dashboard/contacts', icon: Users },
     { name: 'Mandats', href: '/dashboard/mandates', icon: FileText },
     { name: 'Visites', href: '/dashboard/visits', icon: Calendar },
+    { name: 'Matching', href: '/dashboard/matching', icon: Sparkles },
     { name: 'Paramètres', href: '/dashboard/settings', icon: Settings },
   ];
 

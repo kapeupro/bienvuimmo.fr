@@ -85,9 +85,11 @@ const ROUTES = {
   '/fonctionnalites': '/fonctionnalites.html',
   '/inscription': '/inscription.html',
   '/connexion': '/connexion.html',
+  '/confirmer-email': '/confirmer-email.html',
   '/dashboard': '/dashboard.html',
   '/dashboard/contacts': '/dashboard/contacts.html',
   '/dashboard/mandates': '/dashboard/mandates.html',
+  '/dashboard/matching': '/dashboard/matching.html',
   '/dashboard/properties': '/dashboard/properties.html',
   '/dashboard/settings': '/dashboard/settings.html',
   '/dashboard/visits': '/dashboard/visits.html',
@@ -879,6 +881,9 @@ async function handleDeleteProperty(req, res, id) {
     if (!user) return sendJSON(res, 401, { error: 'Non authentifié' });
     if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
 
+    // Delete associated images first
+    await pool.execute('DELETE FROM PropertyPhoto WHERE propertyId = ?', [id]);
+    
     const [result] = await pool.execute(
       'DELETE FROM Property WHERE id = ? AND agencyId = ?',
       [id, user.agencyId]
@@ -891,6 +896,720 @@ async function handleDeleteProperty(req, res, id) {
     sendJSON(res, 200, { success: true });
   } catch (error) {
     console.error('Delete property error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+// ============ PROPERTY IMAGES API ============
+
+const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads', 'properties');
+
+// Ensure upload directory exists
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+async function handleUploadPropertyImage(req, res, propertyId) {
+  try {
+    const user = await getAuthenticatedUser(req);
+    if (!user) return sendJSON(res, 401, { error: 'Non authentifié' });
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    // Verify property belongs to agency
+    const [properties] = await pool.execute(
+      'SELECT id FROM Property WHERE id = ? AND agencyId = ?',
+      [propertyId, user.agencyId]
+    );
+    if (properties.length === 0) {
+      return sendJSON(res, 404, { error: 'Bien non trouvé' });
+    }
+
+    // Parse multipart form data
+    const contentType = req.headers['content-type'] || '';
+    if (!contentType.includes('multipart/form-data')) {
+      return sendJSON(res, 400, { error: 'Content-Type multipart/form-data requis' });
+    }
+
+    const boundary = contentType.split('boundary=')[1];
+    if (!boundary) {
+      return sendJSON(res, 400, { error: 'Boundary manquant' });
+    }
+
+    // Collect raw data
+    const chunks = [];
+    for await (const chunk of req) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
+    
+    // Parse multipart data
+    const parts = parseMultipart(buffer, boundary);
+    const uploadedImages = [];
+
+    for (const part of parts) {
+      if (part.filename && part.data) {
+        // Validate file type
+        const ext = path.extname(part.filename).toLowerCase();
+        if (!['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext)) {
+          continue; // Skip invalid files
+        }
+
+        // Generate unique filename
+        const id = crypto.randomUUID();
+        const filename = `${propertyId}-${id}${ext}`;
+        const filepath = path.join(UPLOAD_DIR, filename);
+        const url = `/uploads/properties/${filename}`;
+
+        // Save file
+        fs.writeFileSync(filepath, part.data);
+
+        // Get current max order
+        const [maxOrder] = await pool.execute(
+          'SELECT MAX(`order`) as maxOrder FROM PropertyPhoto WHERE propertyId = ?',
+          [propertyId]
+        );
+        const order = (maxOrder[0]?.maxOrder || 0) + 1;
+
+        // Save to database
+        await pool.execute(
+          'INSERT INTO PropertyPhoto (id, url, title, `order`, propertyId, createdAt) VALUES (?, ?, ?, ?, ?, NOW())',
+          [id, url, part.filename, order, propertyId]
+        );
+
+        uploadedImages.push({ id, url, title: part.filename, order });
+      }
+    }
+
+    if (uploadedImages.length === 0) {
+      return sendJSON(res, 400, { error: 'Aucune image valide trouvée' });
+    }
+
+    sendJSON(res, 201, { images: uploadedImages });
+  } catch (error) {
+    console.error('Upload image error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+function parseMultipart(buffer, boundary) {
+  const parts = [];
+  const boundaryBuffer = Buffer.from(`--${boundary}`);
+  const endBoundary = Buffer.from(`--${boundary}--`);
+  
+  let start = buffer.indexOf(boundaryBuffer);
+  while (start !== -1) {
+    const end = buffer.indexOf(boundaryBuffer, start + boundaryBuffer.length);
+    if (end === -1) break;
+    
+    const part = buffer.slice(start + boundaryBuffer.length, end);
+    const headerEnd = part.indexOf('\r\n\r\n');
+    if (headerEnd === -1) {
+      start = end;
+      continue;
+    }
+    
+    const headers = part.slice(0, headerEnd).toString();
+    const data = part.slice(headerEnd + 4, part.length - 2); // Remove trailing \r\n
+    
+    const nameMatch = headers.match(/name="([^"]+)"/);
+    const filenameMatch = headers.match(/filename="([^"]+)"/);
+    
+    if (filenameMatch && data.length > 0) {
+      parts.push({
+        name: nameMatch ? nameMatch[1] : 'file',
+        filename: filenameMatch[1],
+        data: data
+      });
+    }
+    
+    start = end;
+  }
+  
+  return parts;
+}
+
+async function handleGetPropertyImages(req, res, propertyId) {
+  try {
+    const user = await getAuthenticatedUser(req);
+    if (!user) return sendJSON(res, 401, { error: 'Non authentifié' });
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    const [images] = await pool.execute(
+      'SELECT * FROM PropertyPhoto WHERE propertyId = ? ORDER BY `order`',
+      [propertyId]
+    );
+
+    sendJSON(res, 200, { images });
+  } catch (error) {
+    console.error('Get property images error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+async function handleDeletePropertyImage(req, res, propertyId, imageId) {
+  try {
+    const user = await getAuthenticatedUser(req);
+    if (!user) return sendJSON(res, 401, { error: 'Non authentifié' });
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    // Get image info
+    const [images] = await pool.execute(
+      `SELECT pp.* FROM PropertyPhoto pp 
+       JOIN Property p ON pp.propertyId = p.id 
+       WHERE pp.id = ? AND pp.propertyId = ? AND p.agencyId = ?`,
+      [imageId, propertyId, user.agencyId]
+    );
+
+    if (images.length === 0) {
+      return sendJSON(res, 404, { error: 'Image non trouvée' });
+    }
+
+    // Delete file
+    const filename = images[0].url.replace('/uploads/properties/', '');
+    const filepath = path.join(UPLOAD_DIR, filename);
+    if (fs.existsSync(filepath)) {
+      fs.unlinkSync(filepath);
+    }
+
+    // Delete from database
+    await pool.execute('DELETE FROM PropertyPhoto WHERE id = ?', [imageId]);
+
+    sendJSON(res, 200, { success: true });
+  } catch (error) {
+    console.error('Delete property image error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+async function handleReorderPropertyImages(req, res, propertyId) {
+  try {
+    const user = await getAuthenticatedUser(req);
+    if (!user) return sendJSON(res, 401, { error: 'Non authentifié' });
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    const body = await parseBody(req);
+    const { imageIds } = body; // Array of image IDs in new order
+
+    if (!imageIds || !Array.isArray(imageIds)) {
+      return sendJSON(res, 400, { error: 'Liste des images requise' });
+    }
+
+    // Update order for each image
+    for (let i = 0; i < imageIds.length; i++) {
+      await pool.execute(
+        'UPDATE PropertyPhoto SET `order` = ? WHERE id = ? AND propertyId = ?',
+        [i + 1, imageIds[i], propertyId]
+      );
+    }
+
+    sendJSON(res, 200, { success: true });
+  } catch (error) {
+    console.error('Reorder images error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+// ============ PUBLIC PROPERTIES API (Annonces) ============
+
+async function handleGetPublicProperties(req, res) {
+  try {
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    const urlParams = new URL(req.url, `http://${req.headers.host}`);
+    const type = urlParams.searchParams.get('type');
+    const transactionType = urlParams.searchParams.get('transactionType');
+    const city = urlParams.searchParams.get('city');
+    const minPrice = urlParams.searchParams.get('minPrice');
+    const maxPrice = urlParams.searchParams.get('maxPrice');
+    const minSurface = urlParams.searchParams.get('minSurface');
+    const maxSurface = urlParams.searchParams.get('maxSurface');
+    const rooms = urlParams.searchParams.get('rooms');
+    const bedrooms = urlParams.searchParams.get('bedrooms');
+    const search = urlParams.searchParams.get('search');
+    const limit = parseInt(urlParams.searchParams.get('limit') || '20');
+    const offset = parseInt(urlParams.searchParams.get('offset') || '0');
+
+    let query = `
+      SELECT p.id, p.reference, p.title, p.description, p.type, p.transactionType,
+             p.status, p.price, p.surface, p.rooms, p.bedrooms, p.bathrooms,
+             p.address, p.city, p.postalCode, p.energyClass, p.gesClass,
+             p.features, p.createdAt,
+             a.name as agencyName, a.phone as agencyPhone, a.email as agencyEmail,
+             (SELECT url FROM PropertyPhoto WHERE propertyId = p.id ORDER BY \`order\` LIMIT 1) as mainPhoto
+      FROM Property p
+      JOIN Agency a ON p.agencyId = a.id
+      WHERE p.status = 'AVAILABLE' AND a.isActive = 1
+    `;
+    const params = [];
+
+    if (type) {
+      query += ' AND p.type = ?';
+      params.push(type);
+    }
+    if (transactionType) {
+      query += ' AND p.transactionType = ?';
+      params.push(transactionType);
+    }
+    if (city) {
+      query += ' AND p.city LIKE ?';
+      params.push(`%${city}%`);
+    }
+    if (minPrice) {
+      query += ' AND p.price >= ?';
+      params.push(parseFloat(minPrice));
+    }
+    if (maxPrice) {
+      query += ' AND p.price <= ?';
+      params.push(parseFloat(maxPrice));
+    }
+    if (minSurface) {
+      query += ' AND p.surface >= ?';
+      params.push(parseFloat(minSurface));
+    }
+    if (maxSurface) {
+      query += ' AND p.surface <= ?';
+      params.push(parseFloat(maxSurface));
+    }
+    if (rooms) {
+      query += ' AND p.rooms >= ?';
+      params.push(parseInt(rooms));
+    }
+    if (bedrooms) {
+      query += ' AND p.bedrooms >= ?';
+      params.push(parseInt(bedrooms));
+    }
+    if (search) {
+      query += ' AND (p.title LIKE ? OR p.description LIKE ? OR p.city LIKE ? OR p.reference LIKE ?)';
+      const searchTerm = `%${search}%`;
+      params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+    }
+
+    // Count total
+    const countQuery = query.replace(/SELECT .+ FROM/, 'SELECT COUNT(*) as total FROM');
+    const [countResult] = await pool.execute(countQuery, params);
+    const total = countResult[0]?.total || 0;
+
+    // Add ordering and pagination
+    query += ' ORDER BY p.createdAt DESC LIMIT ? OFFSET ?';
+    params.push(limit, offset);
+
+    const [properties] = await pool.execute(query, params);
+
+    // Parse features JSON for each property
+    const propertiesWithFeatures = properties.map(p => ({
+      ...p,
+      features: p.features ? JSON.parse(p.features) : []
+    }));
+
+    sendJSON(res, 200, { properties: propertiesWithFeatures, total, limit, offset });
+  } catch (error) {
+    console.error('Get public properties error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+async function handleGetPublicProperty(req, res, id) {
+  try {
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    const [properties] = await pool.execute(
+      `SELECT p.*, a.name as agencyName, a.phone as agencyPhone, a.email as agencyEmail
+       FROM Property p
+       JOIN Agency a ON p.agencyId = a.id
+       WHERE p.id = ? AND p.status = 'AVAILABLE' AND a.isActive = 1`,
+      [id]
+    );
+
+    if (properties.length === 0) {
+      return sendJSON(res, 404, { error: 'Annonce non trouvée' });
+    }
+
+    const property = properties[0];
+    property.features = property.features ? JSON.parse(property.features) : [];
+
+    // Get all photos
+    const [photos] = await pool.execute(
+      'SELECT id, url, title, `order` FROM PropertyPhoto WHERE propertyId = ? ORDER BY `order`',
+      [id]
+    );
+
+    sendJSON(res, 200, { property: { ...property, photos } });
+  } catch (error) {
+    console.error('Get public property error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+async function handlePublicContactRequest(req, res) {
+  try {
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    const body = await parseBody(req);
+    const { propertyId, firstName, lastName, email, phone, message } = body;
+
+    if (!propertyId || !firstName || !lastName || !email) {
+      return sendJSON(res, 400, { error: 'Informations manquantes' });
+    }
+
+    // Get property and agency info
+    const [properties] = await pool.execute(
+      'SELECT p.*, a.email as agencyEmail, a.name as agencyName FROM Property p JOIN Agency a ON p.agencyId = a.id WHERE p.id = ?',
+      [propertyId]
+    );
+
+    if (properties.length === 0) {
+      return sendJSON(res, 404, { error: 'Bien non trouvé' });
+    }
+
+    const property = properties[0];
+
+    // Create contact in database
+    const contactId = crypto.randomUUID();
+    await pool.execute(
+      `INSERT INTO Contact (id, type, firstName, lastName, email, phone, agencyId, createdAt, updatedAt)
+       VALUES (?, 'BUYER', ?, ?, ?, ?, ?, NOW(), NOW())
+       ON DUPLICATE KEY UPDATE updatedAt = NOW()`,
+      [contactId, firstName, lastName, email, phone || null, property.agencyId]
+    );
+
+    // Send email to agency
+    if (property.agencyEmail) {
+      try {
+        await emailTransporter.sendMail({
+          from: process.env.SMTP_USER || 'noreply@bienvuimmo.fr',
+          to: property.agencyEmail,
+          subject: `Nouvelle demande de contact - ${property.reference}`,
+          html: `
+            <h2>Nouvelle demande de contact</h2>
+            <p><strong>Bien:</strong> ${property.title} (${property.reference})</p>
+            <p><strong>De:</strong> ${firstName} ${lastName}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Téléphone:</strong> ${phone || 'Non renseigné'}</p>
+            <p><strong>Message:</strong></p>
+            <p>${message || 'Aucun message'}</p>
+            <hr>
+            <p>Connectez-vous à votre dashboard BienVuImmo pour gérer ce contact.</p>
+          `
+        });
+      } catch (emailError) {
+        console.error('Failed to send contact email:', emailError);
+        // Don't fail the request if email fails
+      }
+    }
+
+    sendJSON(res, 201, { success: true, message: 'Votre demande a été envoyée' });
+  } catch (error) {
+    console.error('Contact request error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+// ============ MATCHING API ============
+
+async function handleGetMatches(req, res) {
+  try {
+    const user = await getAuthenticatedUser(req);
+    if (!user) return sendJSON(res, 401, { error: 'Non authentifié' });
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    const urlParams = new URL(req.url, `http://${req.headers.host}`);
+    const propertyId = urlParams.searchParams.get('propertyId');
+    const contactId = urlParams.searchParams.get('contactId');
+    const status = urlParams.searchParams.get('status');
+    const minScore = parseInt(urlParams.searchParams.get('minScore') || '0');
+
+    let query = `
+      SELECT m.*, 
+             p.title as propertyTitle, p.reference as propertyRef, p.city as propertyCity, p.price as propertyPrice,
+             c.firstName as contactFirstName, c.lastName as contactLastName, c.email as contactEmail, c.phone as contactPhone
+      FROM \`Match\` m
+      JOIN Property p ON m.propertyId = p.id
+      JOIN Contact c ON m.contactId = c.id
+      WHERE p.agencyId = ?
+    `;
+    const params = [user.agencyId];
+
+    if (propertyId) {
+      query += ' AND m.propertyId = ?';
+      params.push(propertyId);
+    }
+    if (contactId) {
+      query += ' AND m.contactId = ?';
+      params.push(contactId);
+    }
+    if (status) {
+      query += ' AND m.status = ?';
+      params.push(status);
+    }
+    if (minScore > 0) {
+      query += ' AND m.score >= ?';
+      params.push(minScore);
+    }
+
+    query += ' ORDER BY m.score DESC, m.createdAt DESC';
+
+    const [matches] = await pool.execute(query, params);
+
+    sendJSON(res, 200, { matches });
+  } catch (error) {
+    console.error('Get matches error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+async function handleRunMatching(req, res) {
+  try {
+    const user = await getAuthenticatedUser(req);
+    if (!user) return sendJSON(res, 401, { error: 'Non authentifié' });
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    const body = await parseBody(req);
+    const { propertyId, contactId } = body;
+
+    // If propertyId provided, match property against all BUYER contacts
+    // If contactId provided, match contact against all AVAILABLE properties
+    // If both, just match those two
+
+    const newMatches = [];
+
+    if (propertyId && contactId) {
+      // Single match
+      const score = await calculateMatchScore(propertyId, contactId);
+      if (score > 0) {
+        await saveMatch(propertyId, contactId, score);
+        newMatches.push({ propertyId, contactId, score });
+      }
+    } else if (propertyId) {
+      // Match property against all buyers
+      const [contacts] = await pool.execute(
+        "SELECT id FROM Contact WHERE agencyId = ? AND type = 'BUYER' AND searchCriteria IS NOT NULL",
+        [user.agencyId]
+      );
+      
+      for (const contact of contacts) {
+        const score = await calculateMatchScore(propertyId, contact.id);
+        if (score >= 30) { // Minimum 30% match
+          await saveMatch(propertyId, contact.id, score);
+          newMatches.push({ propertyId, contactId: contact.id, score });
+        }
+      }
+    } else if (contactId) {
+      // Match contact against all available properties
+      const [properties] = await pool.execute(
+        "SELECT id FROM Property WHERE agencyId = ? AND status = 'AVAILABLE'",
+        [user.agencyId]
+      );
+      
+      for (const property of properties) {
+        const score = await calculateMatchScore(property.id, contactId);
+        if (score >= 30) {
+          await saveMatch(property.id, contactId, score);
+          newMatches.push({ propertyId: property.id, contactId, score });
+        }
+      }
+    } else {
+      // Full matching: all properties vs all buyers
+      const [properties] = await pool.execute(
+        "SELECT id FROM Property WHERE agencyId = ? AND status = 'AVAILABLE'",
+        [user.agencyId]
+      );
+      const [contacts] = await pool.execute(
+        "SELECT id FROM Contact WHERE agencyId = ? AND type = 'BUYER' AND searchCriteria IS NOT NULL",
+        [user.agencyId]
+      );
+
+      for (const property of properties) {
+        for (const contact of contacts) {
+          const score = await calculateMatchScore(property.id, contact.id);
+          if (score >= 30) {
+            await saveMatch(property.id, contact.id, score);
+            newMatches.push({ propertyId: property.id, contactId: contact.id, score });
+          }
+        }
+      }
+    }
+
+    sendJSON(res, 200, { 
+      success: true, 
+      matchesCreated: newMatches.length,
+      matches: newMatches.sort((a, b) => b.score - a.score).slice(0, 20)
+    });
+  } catch (error) {
+    console.error('Run matching error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+async function calculateMatchScore(propertyId, contactId) {
+  try {
+    // Get property details
+    const [properties] = await pool.execute(
+      'SELECT * FROM Property WHERE id = ?',
+      [propertyId]
+    );
+    if (properties.length === 0) return 0;
+    const property = properties[0];
+
+    // Get contact search criteria
+    const [contacts] = await pool.execute(
+      'SELECT searchCriteria FROM Contact WHERE id = ?',
+      [contactId]
+    );
+    if (contacts.length === 0 || !contacts[0].searchCriteria) return 0;
+    
+    let criteria;
+    try {
+      criteria = typeof contacts[0].searchCriteria === 'string' 
+        ? JSON.parse(contacts[0].searchCriteria) 
+        : contacts[0].searchCriteria;
+    } catch {
+      return 0;
+    }
+
+    let score = 0;
+    let maxScore = 0;
+
+    // Type match (20 points)
+    if (criteria.types && criteria.types.length > 0) {
+      maxScore += 20;
+      if (criteria.types.includes(property.type)) {
+        score += 20;
+      }
+    }
+
+    // Transaction type match (20 points)
+    if (criteria.transactionType) {
+      maxScore += 20;
+      if (criteria.transactionType === property.transactionType) {
+        score += 20;
+      }
+    }
+
+    // Price range (20 points)
+    if (criteria.minPrice || criteria.maxPrice) {
+      maxScore += 20;
+      const priceOk = (!criteria.minPrice || property.price >= criteria.minPrice) &&
+                      (!criteria.maxPrice || property.price <= criteria.maxPrice);
+      if (priceOk) {
+        score += 20;
+      } else if (criteria.maxPrice && property.price <= criteria.maxPrice * 1.1) {
+        // Within 10% over budget
+        score += 10;
+      }
+    }
+
+    // Surface range (15 points)
+    if (criteria.minSurface || criteria.maxSurface) {
+      maxScore += 15;
+      const surfaceOk = (!criteria.minSurface || property.surface >= criteria.minSurface) &&
+                        (!criteria.maxSurface || property.surface <= criteria.maxSurface);
+      if (surfaceOk) {
+        score += 15;
+      }
+    }
+
+    // Rooms (10 points)
+    if (criteria.minRooms) {
+      maxScore += 10;
+      if (property.rooms >= criteria.minRooms) {
+        score += 10;
+      }
+    }
+
+    // Bedrooms (10 points)
+    if (criteria.minBedrooms) {
+      maxScore += 10;
+      if (property.bedrooms >= criteria.minBedrooms) {
+        score += 10;
+      }
+    }
+
+    // Location (15 points)
+    if (criteria.cities && criteria.cities.length > 0) {
+      maxScore += 15;
+      const cityMatch = criteria.cities.some(city => 
+        property.city?.toLowerCase().includes(city.toLowerCase()) ||
+        city.toLowerCase().includes(property.city?.toLowerCase() || '')
+      );
+      if (cityMatch) {
+        score += 15;
+      }
+    }
+
+    // Calculate percentage
+    return maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+  } catch (error) {
+    console.error('Calculate match score error:', error);
+    return 0;
+  }
+}
+
+async function saveMatch(propertyId, contactId, score) {
+  try {
+    const id = crypto.randomUUID();
+    await pool.execute(
+      `INSERT INTO \`Match\` (id, propertyId, contactId, score, status, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, 'PENDING', NOW(), NOW())
+       ON DUPLICATE KEY UPDATE score = ?, updatedAt = NOW()`,
+      [id, propertyId, contactId, score, score]
+    );
+  } catch (error) {
+    console.error('Save match error:', error);
+  }
+}
+
+async function handleUpdateMatchStatus(req, res, matchId) {
+  try {
+    const user = await getAuthenticatedUser(req);
+    if (!user) return sendJSON(res, 401, { error: 'Non authentifié' });
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    const body = await parseBody(req);
+    const { status, notes } = body;
+
+    if (!status || !['PENDING', 'CONTACTED', 'INTERESTED', 'NOT_INTERESTED', 'ARCHIVED'].includes(status)) {
+      return sendJSON(res, 400, { error: 'Statut invalide' });
+    }
+
+    const [result] = await pool.execute(
+      `UPDATE \`Match\` m
+       JOIN Property p ON m.propertyId = p.id
+       SET m.status = ?, m.notes = ?, m.updatedAt = NOW()
+       WHERE m.id = ? AND p.agencyId = ?`,
+      [status, notes || null, matchId, user.agencyId]
+    );
+
+    if (result.affectedRows === 0) {
+      return sendJSON(res, 404, { error: 'Match non trouvé' });
+    }
+
+    sendJSON(res, 200, { success: true });
+  } catch (error) {
+    console.error('Update match status error:', error);
+    sendJSON(res, 500, { error: 'Erreur serveur' });
+  }
+}
+
+async function handleDeleteMatch(req, res, matchId) {
+  try {
+    const user = await getAuthenticatedUser(req);
+    if (!user) return sendJSON(res, 401, { error: 'Non authentifié' });
+    if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
+
+    const [result] = await pool.execute(
+      `DELETE m FROM \`Match\` m
+       JOIN Property p ON m.propertyId = p.id
+       WHERE m.id = ? AND p.agencyId = ?`,
+      [matchId, user.agencyId]
+    );
+
+    if (result.affectedRows === 0) {
+      return sendJSON(res, 404, { error: 'Match non trouvé' });
+    }
+
+    sendJSON(res, 200, { success: true });
+  } catch (error) {
+    console.error('Delete match error:', error);
     sendJSON(res, 500, { error: 'Erreur serveur' });
   }
 }
@@ -1565,6 +2284,56 @@ const server = http.createServer(async (req, res) => {
     const id = url.split('/').pop();
     return handleDeleteProperty(req, res, id);
   }
+  
+  // ===== PROPERTY IMAGES API =====
+  if (url.match(/^\/api\/properties\/[\w-]+\/images$/) && method === 'GET') {
+    const propertyId = url.split('/')[3];
+    return handleGetPropertyImages(req, res, propertyId);
+  }
+  if (url.match(/^\/api\/properties\/[\w-]+\/images$/) && method === 'POST') {
+    const propertyId = url.split('/')[3];
+    return handleUploadPropertyImage(req, res, propertyId);
+  }
+  if (url.match(/^\/api\/properties\/[\w-]+\/images\/[\w-]+$/) && method === 'DELETE') {
+    const parts = url.split('/');
+    const propertyId = parts[3];
+    const imageId = parts[5];
+    return handleDeletePropertyImage(req, res, propertyId, imageId);
+  }
+  if (url.match(/^\/api\/properties\/[\w-]+\/images\/reorder$/) && method === 'PUT') {
+    const propertyId = url.split('/')[3];
+    return handleReorderPropertyImages(req, res, propertyId);
+  }
+
+  // ===== PUBLIC PROPERTIES API (Annonces) =====
+  if (url.startsWith('/api/annonces') && method === 'GET') {
+    if (url === '/api/annonces') {
+      return handleGetPublicProperties(req, res);
+    }
+    const id = url.split('/').pop();
+    if (id && id !== 'annonces') {
+      return handleGetPublicProperty(req, res, id);
+    }
+  }
+  if (url === '/api/annonces/contact' && method === 'POST') {
+    return handlePublicContactRequest(req, res);
+  }
+
+  // ===== MATCHING API =====
+  if (url === '/api/matches' && method === 'GET') {
+    return handleGetMatches(req, res);
+  }
+  if (url === '/api/matches/run' && method === 'POST') {
+    return handleRunMatching(req, res);
+  }
+  if (url.match(/^\/api\/matches\/[\w-]+$/) && method === 'PUT') {
+    const id = url.split('/').pop();
+    return handleUpdateMatchStatus(req, res, id);
+  }
+  if (url.match(/^\/api\/matches\/[\w-]+$/) && method === 'DELETE') {
+    const id = url.split('/').pop();
+    return handleDeleteMatch(req, res, id);
+  }
 
   // ===== CONTACTS API =====
   if (url === '/api/contacts' && method === 'GET') {
@@ -1649,6 +2418,14 @@ const server = http.createServer(async (req, res) => {
   if (url.startsWith('/_next/static/')) {
     const staticPath = url.replace('/_next/static/', '');
     return serveFile(path.join(STATIC_DIR, staticPath), res);
+  }
+
+  // Fichiers uploads (images propriétés)
+  if (url.startsWith('/uploads/')) {
+    const uploadPath = path.join(__dirname, 'public', url);
+    if (fs.existsSync(uploadPath)) {
+      return serveFile(uploadPath, res);
+    }
   }
 
   // Pages HTML pré-générées
