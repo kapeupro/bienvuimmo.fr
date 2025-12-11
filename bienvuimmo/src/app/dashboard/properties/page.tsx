@@ -49,6 +49,7 @@ export default function PropertiesPage() {
     title: '',
     description: '',
     type: 'APARTMENT',
+    transactionType: 'SALE',
     status: 'AVAILABLE',
     price: '',
     surface: '',
@@ -128,7 +129,7 @@ export default function PropertiesPage() {
 
       setShowNewModal(false);
       setFormData({
-        title: '', description: '', type: 'APARTMENT', status: 'AVAILABLE',
+        title: '', description: '', type: 'APARTMENT', transactionType: 'SALE', status: 'AVAILABLE',
         price: '', surface: '', rooms: '', bedrooms: '', bathrooms: '',
         address: '', city: '', postalCode: ''
       });
@@ -459,6 +460,21 @@ export default function PropertiesPage() {
                     <option value="LAND">Terrain</option>
                     <option value="COMMERCIAL">Commerce</option>
                     <option value="PARKING">Parking</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-stone-700 mb-2">
+                    Transaction *
+                  </label>
+                  <select
+                    required
+                    value={formData.transactionType}
+                    onChange={(e) => setFormData({ ...formData, transactionType: e.target.value })}
+                    className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  >
+                    <option value="SALE">Vente</option>
+                    <option value="RENT">Location</option>
                   </select>
                 </div>
                 

@@ -11,13 +11,13 @@
   "/contact/page": "app/contact/page.js",
   "/fonctionnalites/page": "app/fonctionnalites/page.js",
   "/inscription/page": "app/inscription/page.js",
-  "/page": "app/page.js",
   "/tarifs/page": "app/tarifs/page.js",
+  "/page": "app/page.js",
   "/dashboard/contacts/page": "app/dashboard/contacts/page.js",
   "/dashboard/mandates/page": "app/dashboard/mandates/page.js",
-  "/dashboard/matching/page": "app/dashboard/matching/page.js",
   "/dashboard/properties/page": "app/dashboard/properties/page.js",
   "/dashboard/settings/page": "app/dashboard/settings/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/visits/page": "app/dashboard/visits/page.js"
+  "/dashboard/visits/page": "app/dashboard/visits/page.js",
+  "/dashboard/matching/page": "app/dashboard/matching/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }

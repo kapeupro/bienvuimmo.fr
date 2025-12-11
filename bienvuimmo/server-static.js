@@ -794,8 +794,8 @@ async function handleCreateProperty(req, res) {
     if (!pool) return sendJSON(res, 503, { error: 'Base de données non disponible' });
 
     const body = await parseBody(req);
-    const { title, description, type, status, price, surface, rooms, bedrooms, bathrooms, 
-            address, city, postalCode, latitude, longitude, features } = body;
+    const { title, description, type, status, price, surface, rooms, bedrooms, bathrooms,
+            address, city, postalCode, latitude, longitude, features, transactionType } = body;
 
     if (!title || !type || !price) {
       return sendJSON(res, 400, { error: 'Titre, type et prix sont requis' });
@@ -805,9 +805,9 @@ async function handleCreateProperty(req, res) {
     const reference = `BV-${Date.now().toString(36).toUpperCase()}`;
 
     await pool.execute(
-      `INSERT INTO Property (id, reference, title, description, type, status, price, surface, rooms, bedrooms, bathrooms, address, city, postalCode, latitude, longitude, features, agencyId, agentId, createdAt, updatedAt)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-      [id, reference, title, description || null, type, status || 'AVAILABLE', price, surface || null, rooms || null, bedrooms || null, bathrooms || null, address || null, city || null, postalCode || null, latitude || null, longitude || null, JSON.stringify(features || []), user.agencyId, user.userId]
+      `INSERT INTO Property (id, reference, title, description, type, transactionType, status, price, surface, rooms, bedrooms, bathrooms, address, city, postalCode, latitude, longitude, features, agencyId, agentId, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [id, reference, title, description || null, type, transactionType || 'SALE', status || 'AVAILABLE', price, surface || null, rooms || null, bedrooms || null, bathrooms || null, address || '', city || '', postalCode || '', latitude || null, longitude || null, JSON.stringify(features || []), user.agencyId, user.userId]
     );
 
     // Log activity

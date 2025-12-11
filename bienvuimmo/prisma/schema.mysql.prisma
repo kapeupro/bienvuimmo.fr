@@ -78,21 +78,24 @@ model Property {
   title         String
   description   String?        @db.Text
   type          PropertyType
+  transactionType String?
   status        PropertyStatus @default(AVAILABLE)
   price         Float
   surface       Float?
   rooms         Int?
   bedrooms      Int?
+  bathrooms     Int?
   floor         Int?
-  address       String
-  city          String
-  postalCode    String
+  address       String?
+  city          String?
+  postalCode    String?
   latitude      Float?
   longitude     Float?
   photos        Json?
   documents     Json?
   features      Json?
   energyClass   String?
+  gesClass      String?
   ghgClass      String?
   agencyId      String
   agency        Agency         @relation(fields: [agencyId], references: [id], onDelete: Cascade)

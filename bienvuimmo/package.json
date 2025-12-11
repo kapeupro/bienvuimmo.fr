@@ -23,6 +23,7 @@
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "dotenv": "^17.2.3",
     "gsap": "^3.14.1",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.344.0",
